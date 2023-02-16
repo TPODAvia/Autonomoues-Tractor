@@ -8,17 +8,18 @@ from utils import *
 from concurrent import futures
 # import motor
 from PIL import Image
-import io
+# import io
 import cv2
 import time
+import pickle
 
 cam = cv2.VideoCapture(0)
 
 feature_extractor_handler = feature_extractor()
 with open('./camera_0_calibration.p', 'rb') as f:
     cfg = pickle.load(f)
-MOTOR_LEFT = motor.motor(12,18) 
-MOTOR_RIGHT = motor.motor(19,13) 
+# MOTOR_LEFT = motor.motor(12,18) 
+# MOTOR_RIGHT = motor.motor(19,13) 
 
 def convert_points(img):
     return np.asarray(np.vstack([img, np.ones(img.shape[1])]))
@@ -72,52 +73,52 @@ class video_streamer_handlerServicerServicer(video_streaming_service_pb2_grpc.vi
         return video_streaming_service_pb2.image_chunk(image=image_bytes)
 
 
-class robot_control_handlerServicerServicer(robot_control_service_pb2_grpc.robot_control_handlerServicer):
-    def robot_move_forward(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_LEFT.forward() 
-        MOTOR_RIGHT.forward() 
-        return robot_control_service_pb2.Empty()
+# class robot_control_handlerServicerServicer(robot_control_service_pb2_grpc.robot_control_handlerServicer):
+#     def robot_move_forward(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_LEFT.forward() 
+#         MOTOR_RIGHT.forward() 
+#         return robot_control_service_pb2.Empty()
 
-    def robot_move_backward(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_LEFT.reverse() 
-        MOTOR_RIGHT.reverse() 
-        return robot_control_service_pb2.Empty()
+#     def robot_move_backward(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_LEFT.reverse() 
+#         MOTOR_RIGHT.reverse() 
+#         return robot_control_service_pb2.Empty()
 
-    def robot_break(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        return robot_control_service_pb2.Empty()
+#     def robot_break(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         return robot_control_service_pb2.Empty()
 
-    def robot_turn_right(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_LEFT.forward() 
-        return robot_control_service_pb2.Empty()
+#     def robot_turn_right(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_LEFT.forward() 
+#         return robot_control_service_pb2.Empty()
 
-    def robot_turn_left(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_RIGHT.forward() 
-        return robot_control_service_pb2.Empty()
+#     def robot_turn_left(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_RIGHT.forward() 
+#         return robot_control_service_pb2.Empty()
 
-    def robot_set_speed(self, request, context):
-        MOTOR_LEFT.motor_break()
-        MOTOR_RIGHT.motor_break()
-        MOTOR_LEFT.set_speed(request.speed)
-        MOTOR_RIGHT.set_speed(request.speed)
-        return robot_control_service_pb2.Empty()
+#     def robot_set_speed(self, request, context):
+#         MOTOR_LEFT.motor_break()
+#         MOTOR_RIGHT.motor_break()
+#         MOTOR_LEFT.set_speed(request.speed)
+#         MOTOR_RIGHT.set_speed(request.speed)
+#         return robot_control_service_pb2.Empty()
 
 
 def main():
     print("starting server")
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=5))
-    robot_control_service_pb2_grpc.add_robot_control_handlerServicer_to_server(robot_control_handlerServicerServicer(),server)
+    # robot_control_service_pb2_grpc.add_robot_control_handlerServicer_to_server(robot_control_handlerServicerServicer(),server)
     video_streaming_service_pb2_grpc.add_video_streamer_handlerServicer_to_server(video_streamer_handlerServicerServicer(),server)
     server.add_insecure_port("[::]:50052")
     server.start()

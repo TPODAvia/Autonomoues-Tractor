@@ -8,7 +8,7 @@ class feature_extractor:
         self.last = None
         self.params = dict(algorithm=1,trees =5)
         self.flann = cv2.FlannBasedMatcher(self.params,dict())
-        self.sift = cv2.SIFT_create()
+        # self.sift = cv2.SIFT_create()
 
     def get_orb(self,img,kpts): 
         return self.orb_extractor.compute(img, kpts)

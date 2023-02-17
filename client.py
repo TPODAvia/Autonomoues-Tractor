@@ -49,8 +49,8 @@ def camera_get_shoot(img,filename):
     img = cv2.resize(img,IMAGE_SHAPE)
     cv2.imwrite(filename, img)
 
-image_size = (900,900)
-screen_size =(1920,1080)
+image_size = (640,480)
+screen_size =(1280,480)
 window = pygame.display.set_mode(screen_size)
 fe = feature_extractor()
 with open('./camera_0_calibration.p', 'rb') as f:
@@ -149,7 +149,7 @@ frames = []
 def main():
     image_list = []
     detector_flag = False
-    with grpc.insecure_channel('10.100.190.244:50052') as channel:
+    with grpc.insecure_channel('127.0.0.1:50052') as channel:
         client_handler = client(channel)
         running = True
         while running:

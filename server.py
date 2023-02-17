@@ -11,14 +11,15 @@ from PIL import Image
 import io
 import cv2
 import time
+import pickle
 
 cam = cv2.VideoCapture(0)
 
 feature_extractor_handler = feature_extractor()
 with open('./camera_0_calibration.p', 'rb') as f:
     cfg = pickle.load(f)
-MOTOR_LEFT = motor.motor(12,18) 
-MOTOR_RIGHT = motor.motor(19,13) 
+# MOTOR_LEFT = motor.motor(12,18) 
+# MOTOR_RIGHT = motor.motor(19,13) 
 
 def convert_points(img):
     return np.asarray(np.vstack([img, np.ones(img.shape[1])]))
@@ -124,4 +125,4 @@ def main():
     server.wait_for_termination()
 
 main()
-GPIO.cleanup()
+# GPIO.cleanup()

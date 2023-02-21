@@ -17,7 +17,7 @@ import pickle
 import pygame
 from pygame.locals import *
 from feature_extractor import feature_extractor
-from utils import *
+from utils.calc import *
 
 def bubble_sort(arr):
     n = len(arr)
@@ -84,67 +84,65 @@ def display_image(img,position):
     window.blit(surf, position)
     pygame.display.update()
 
-def convert_points(img):
-    return np.asarray(np.vstack([img, np.ones(img.shape[1])]))
+# def convert_points(img):
+#     return np.asarray(np.vstack([img, np.ones(img.shape[1])]))
 
-def get_slam_points(img):
-    p1, p2, kpts, matches = fe.match_frames(img)
-    p1 = convert_points(p1)
-    p2 = convert_points(p2)
+# def get_slam_points(img):
+#     p1, p2, kpts, matches = fe.match_frames(img)
+#     p1 = convert_points(p1)
+#     p2 = convert_points(p2)
 
-    img_h, img_w, img_ch = img.shape
+#     img_h, img_w, img_ch = img.shape
 
-    intrinsic = np.array([[3000,0,img_w/2],
-                [0,3000,img_h/2],
-                [0,0,1]])
-    tripoints3d = []
-    points1_norm = np.dot(np.linalg.inv(intrinsic), p1)
-    points2_norm = np.dot(np.linalg.inv(intrinsic), p2)
+#     intrinsic = np.array([[3000,0,img_w/2],
+#                 [0,3000,img_h/2],
+#                 [0,0,1]])
+#     tripoints3d = []
+#     points1_norm = np.dot(np.linalg.inv(intrinsic), p1)
+#     points2_norm = np.dot(np.linalg.inv(intrinsic), p2)
 
-    E = compute_essential_normalized(points1_norm, points2_norm)
+#     E = compute_essential_normalized(points1_norm, points2_norm)
 
-    P1 = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0]])
-    P2s = compute_P_from_essential(E)
+#     P1 = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0]])
+#     P2s = compute_P_from_essential(E)
 
-    ind = -1
-    for i, P2 in enumerate(P2s):
-        d1 = reconstruct_one_point(points1_norm[:, 0], points2_norm[:, 0], P1, P2)
+#     ind = -1
+#     for i, P2 in enumerate(P2s):
+#         d1 = reconstruct_one_point(points1_norm[:, 0], points2_norm[:, 0], P1, P2)
 
-        P2_homogenous = np.linalg.inv(np.vstack([P2, [0,0,0,1]]))
+#         P2_homogenous = np.linalg.inv(np.vstack([P2, [0,0,0,1]]))
 
-        d2 = np.dot(P2_homogenous[:3, :4], d1)
+#         d2 = np.dot(P2_homogenous[:3, :4], d1)
 
-        if d1[2] > 0 and d2[2] > 0:
-            ind = i
+#         if d1[2] > 0 and d2[2] > 0:
+#             ind = i
 
-        P2 = np.linalg.inv(np.vstack([P2s[ind], [0, 0, 0, 1]]))[:3, :4]
-        tripoints3d = triangulation(points1_norm, points2_norm, P1, P2)
-        # print(tripoints3d[0])
-        # print(kpts)
-    return img, tripoints3d, kpts,
+#         P2 = np.linalg.inv(np.vstack([P2s[ind], [0, 0, 0, 1]]))[:3, :4]
+#         tripoints3d = triangulation(points1_norm, points2_norm, P1, P2)
+#     return img, tripoints3d, kpts,
 
-def display_2d(img):
-    img = img.get_image()
-    img,tripoints3d,kpts =get_slam_points(img)
-    try:
-        img = np.zeros_like(img)
-        if kpts != 0:
-            for kpt in kpts:
-                cv2.circle(img, (int(kpt.pt[0]), int(kpt.pt[1])), radius=2, color=(0,255,0), thickness=-1)
-    except Exception as e:
-        print(e)
-    finally:
-        display_image(img,(screen_size[0]//2,0))
+# def display_2d(img):
+#     img = img.get_image()
+#     img,tripoints3d,kpts =get_slam_points(img)
+#     try:
+#         img = np.zeros_like(img)
+#         if kpts != 0:
+#             for kpt in kpts:
+#                 cv2.circle(img, (int(kpt.pt[0]), int(kpt.pt[1])), radius=2, color=(0,255,0), thickness=-1)
+#     except Exception as e:
+#         print(e)
+#     finally:
+#         display_image(img,(screen_size[0]//2,0))
 
-def orb_displaying_thread_control(img):
-    t = threading.Thread(target=display_orbs,args=(img,)) 
-    t.start()
-    t.join()
+# def orb_displaying_thread_control(img):
+#     t = threading.Thread(target=display_orbs,args=(img,)) 
+#     t.start()
+#     t.join()
 
-def display_2d_points_thread_control(img):
-    t = threading.Thread(target=display_2d,args=(img,)) 
-    t.start()
-    t.join()
+# def display_2d_points_thread_control(img):
+#     t = threading.Thread(target=display_2d,args=(img,)) 
+#     t.start()
+#     t.join()
 
 frames = []
 def main():
@@ -165,7 +163,7 @@ def main():
             img.opencv_2_pygame()
             display_image(img.get_image(),(0,0))
             frames.append(img)
-            display_2d_points_thread_control(img)
+            # display_2d_points_thread_control(img)
         pygame.quit()
 
 main()

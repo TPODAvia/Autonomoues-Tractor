@@ -1,3 +1,6 @@
+import sys
+sys.path.append('..')
+from deprecaded.motor import motor
 import grpc
 from feature_extractor import feature_extractor
 import robot_control_service_pb2
@@ -6,7 +9,6 @@ import video_streaming_service_pb2
 import video_streaming_service_pb2_grpc
 from utils import *
 from concurrent import futures
-# import motor
 from PIL import Image
 import io
 import cv2
@@ -18,8 +20,8 @@ cam = cv2.VideoCapture(0)
 feature_extractor_handler = feature_extractor()
 with open('./camera_0_calibration.p', 'rb') as f:
     cfg = pickle.load(f)
-# MOTOR_LEFT = motor.motor(12,18) 
-# MOTOR_RIGHT = motor.motor(19,13) 
+MOTOR_LEFT = motor.motor(12,18) 
+MOTOR_RIGHT = motor.motor(19,13) 
 
 def convert_points(img):
     return np.asarray(np.vstack([img, np.ones(img.shape[1])]))

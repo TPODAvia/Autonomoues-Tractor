@@ -1,7 +1,7 @@
 import time
 import RPi.GPIO as GPIO 
 import threading
-from getkey import getkey, keys
+# from getkey import getkey, keys
 
 class motor:
     def __init__(self,first_coil,second_coil):

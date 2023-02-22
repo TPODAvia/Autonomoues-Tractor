@@ -13,7 +13,7 @@ import sys
 import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.parent.parent))
 
-from PathPlanning.CubicSpline import cubic_spline_planner
+from Local_Planning.CubicSpline import cubic_spline_planner
 
 NX = 4  # x = x, y, v, yaw
 NU = 2  # a = [accel, steer]

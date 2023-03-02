@@ -240,7 +240,8 @@ def iterative_linear_mpc_control(xref, x0, dref, oa, od):
         if du <= DU_TH:
             break
     else:
-        print("Iterative is max iter")
+        # print("Iterative is max iter")
+        pass
 
     return oa, od, ox, oy, oyaw, ov
 
@@ -420,6 +421,8 @@ def do_simulation(cx, cy, cyaw, ck, sp, dl, initial_state):
         d.append(di)
         a.append(ai)
 
+        # MotorDriver.set_cmd_vel(sp, yaw)
+
         if check_goal(state, goal, target_ind, len(cx)):
             print("Goal")
             break
@@ -508,9 +511,7 @@ def get_straight_course2(dl):
     return cx, cy, cyaw, ck
 
 
-def get_straight_course3(dl):
-    ax = [0.0, -10.0, -20.0, -40.0, -50.0, -60.0, -70.0]
-    ay = [0.0, -1.0, 1.0, 0.0, -1.0, 1.0, 0.0]
+def get_straight_course3(dl, ax, ay):
     cx, cy, cyaw, ck, s = cubic_spline_planner.calc_spline_course(
         ax, ay, ds=dl)
 

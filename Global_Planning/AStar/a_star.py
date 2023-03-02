@@ -48,7 +48,7 @@ class AStarPlanner:
             return str(self.x) + "," + str(self.y) + "," + str(
                 self.cost) + "," + str(self.parent_index)
 
-    def planning(self, sx, sy, gx, gy):
+    def planning(self, sx, sy, gx, gy, animation):
         """
         A star path search
 
@@ -83,16 +83,17 @@ class AStarPlanner:
                                                                          o]))
             current = open_set[c_id]
 
-            # show graph
-            if show_animation:  # pragma: no cover
-                plt.plot(self.calc_grid_position(current.x, self.min_x),
-                         self.calc_grid_position(current.y, self.min_y), "xc")
-                # for stopping simulation with the esc key.
-                plt.gcf().canvas.mpl_connect('key_release_event',
-                                             lambda event: [exit(
-                                                 0) if event.key == 'escape' else None])
-                if len(closed_set.keys()) % 10 == 0:
-                    plt.pause(0.001)
+            if animation == True:
+                # show graph
+                if show_animation:  # pragma: no cover
+                    plt.plot(self.calc_grid_position(current.x, self.min_x),
+                            self.calc_grid_position(current.y, self.min_y), "xc")
+                    # for stopping simulation with the esc key.
+                    plt.gcf().canvas.mpl_connect('key_release_event',
+                                                lambda event: [exit(
+                                                    0) if event.key == 'escape' else None])
+                    if len(closed_set.keys()) % 10 == 0:
+                        plt.pause(0.001)
 
             if current.x == goal_node.x and current.y == goal_node.y:
                 print("Find goal")
@@ -270,7 +271,7 @@ def main():
         plt.axis("equal")
 
     a_star = AStarPlanner(ox, oy, grid_size, robot_radius)
-    rx, ry = a_star.planning(sx, sy, gx, gy)
+    rx, ry = a_star.planning(sx, sy, gx, gy, animation = True)
 
     if show_animation:  # pragma: no cover
         plt.plot(rx, ry, "-r")

@@ -4,9 +4,9 @@ from Local_Planning.model_predictive_speed_and_steer_control.model_predictive_sp
 from Local_Planning.DWA.demo import *
 
 try:
-    from Motor_Control.motor_driver import MotorDriver
+    from Motor_Control.motordriver.motor_driver import MotorDriver
 except:
-    print("Simulation modeGP On")
+    print("Simulation mode On")
     print("No motor driver is activated")
 
 
@@ -34,19 +34,26 @@ def draw_circle(event,x,y,flags,param):
 if __name__ == '__main__':
 
     # 1 SENSOR READING
+    print("Sensor reading is not implemented")
 
     # 2 LOCALISATION
+    print("Localisation reading is not implemented")
 
     # 3 MAPPING
+    print("Mapping reading is not implemented")
 
     # 4 GLOBAL PATH PLANNING
 
-    print("start!!")
-    modeGP = "DRIVING" # "FARMING" "DRIVING" "MANUAL"
+    print("Start Gloabl Planning")
+    modeGP = "FARMING" # "FARMING" "DRIVING" "MANUAL"
 
-    if modeGP == "DRIVING":
+
+    if modeGP == "MANUAL":
+        print("Manual modeGP")
+
+    elif modeGP == "DRIVING":
         
-        print(__file__ + " start!!")
+        print(__file__ + " driving start!!")
 
         # start and goal position
         sx = 0.0  # [m]
@@ -85,7 +92,7 @@ if __name__ == '__main__':
             plt.axis("equal")
 
         a_star = AStarPlanner(x1, y1, grid_size, robot_radius)
-        ax, ay = a_star.planning(sx, sy, gx, gy)
+        ax, ay = a_star.planning(sx, sy, gx, gy, animation = False)
 
         if show_animation:  # pragma: no cover
             plt.plot(ax, ay, "-r")
@@ -94,23 +101,71 @@ if __name__ == '__main__':
 
 
     elif modeGP == "FARMING":
-        x1 = [-5.0,  -5.0,  -5.0,  30.0,  60.0,  60.0, -5.0]
-        y1 = [-5.0,  30.0, 60.0, 60.0,  60.0,  -5.0,  -5.0]
+
+        print(__file__ + " farming start!!")
+
+        x1, y1 = [], []
+        for i in range(-5, 60, 4):
+            x1.append(-5.0)
+            y1.append(i)
+        for i in range(-5, 60, 4):
+            x1.append(i)
+            y1.append(60.0)
+        for i in range(-5, 60, 4):
+            x1.append(60.0)
+            y1.append(55.0-i)
+        for i in range(-5, 60, 4):
+            x1.append(55.0-i)
+            y1.append(-5.0)
+
+        x1.append(-5)
+        y1.append(-5)
+
+        print(x1)
+        print(y1)
+
+        # Padding
+
+        pad=3
+        x2, y2 = [], []
+        for i in range(-5+pad, 60-pad, 4):
+            x2.append(-5.0+pad)
+            y2.append(i)
+        for i in range(-5+pad, 60-pad, 4):
+            x2.append(i)
+            y2.append(60.0-pad)
+        for i in range(-5+pad, 60-pad, 4):
+            x2.append(60.0-pad)
+            y2.append(55.0-i)
+        for i in range(-5+5, 60-5, 4):
+            x2.append(55.0-i)
+            y2.append(-5.0+pad)
+
+        x2.append(0)
+        y2.append(0)
+
+        print(x2)
+        print(y2)
+
+
+        
         resolution = 2
-        ax, ay = planning(x1, y1, resolution)
+        ax, ay = planning(x2, y2, resolution)
 
-    elif modeGP == "MANUAL":
-        print("Manual modeGP")
+
     # planning_animation(x1, y1, resolution)
-
     # sys.exit()
+
     # # 5 LOCAL PATH PLANNING
 
+    modeLP = "MPC" # "MPC" "DWA"
 
-    modeLP = "DWA" # "MPC" "DWA" "MANUAL"
-    
-    if modeLP == "MPC":
-        print(__file__ + " start!!")
+
+    if modeGP == "MANUAL":
+        print("Manual modeLP")
+
+    elif modeLP == "MPC":
+        print(__file__ + "  MPC start!!")
 
         dl = 1.0  # course tick
         cx, cy, cyaw, ck = get_straight_course3(dl,ax,ay)
@@ -191,7 +246,7 @@ if __name__ == '__main__':
             if show_animation:  # pragma: no cover
                 plt.cla()
                 # for stopping simulation with the esc key.
-                plt.plot(x1, y1, "-xb")
+                plt.plot(x1, y1, ".k")
                 plt.plot(ax, ay, "-r")
 
                 plt.gcf().canvas.mpl_connect('key_release_event',
@@ -210,7 +265,9 @@ if __name__ == '__main__':
                 plt.pause(0.0001)
 
     elif modeLP == "DWA":
-        print("Manual modeGP")    
+
+        print(__file__ + " DWA start!!")
+
         cv2.namedWindow('cvwindow')
         cv2.setMouseCallback('cvwindow', draw_circle)
 
@@ -325,6 +382,3 @@ if __name__ == '__main__':
             elif key == ord('r'):
                 opoint_cloud = []
                 odraw_points = []
-
-    elif modeLP == "MANUAL":
-        print("Manual modeLP")

@@ -2,6 +2,7 @@ import cv2
 import pickle
 import numpy as np
 import os
+
 square_side_length_mm = 15.40
 square_size_mm = square_side_length_mm * 4
 square_size = square_size_mm / 1000 

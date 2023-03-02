@@ -1,25 +1,28 @@
 import sys
-sys.path.append('..')
-from Motor_Control.motor_driver import MotorDriver
 import grpc
+from concurrent import futures
+import cv2
+import pickle
+
+
 from feature_extractor import feature_extractor
 import robot_control_service_pb2
 import robot_control_service_pb2_grpc
 import video_streaming_service_pb2
 import video_streaming_service_pb2_grpc
-from utils.calc import *
-from concurrent import futures
-from PIL import Image
-import io
-import cv2
-import time
-import pickle
+from utils.slamutils import *
 
+
+try:
+    from Motor_Control.motordriver.motor_driver import MotorDriver
+except:
+    print("Simulation mode On")
+    print("No motor driver is activated")
 
 cam = cv2.VideoCapture(0)
 
 feature_extractor_handler = feature_extractor()
-with open('./camera_0_calibration.p', 'rb') as f:
+with open('./camera/cam_calib/camera_0_calibration.p', 'rb') as f:
     cfg = pickle.load(f)
 
 def convert_points(img):

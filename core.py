@@ -33,6 +33,16 @@ def draw_circle(event,x,y,flags,param):
 
 if __name__ == '__main__':
 
+
+    import argparse
+    parser = argparse.ArgumentParser(description='DWA Demo')
+    parser.add_argument('--save', dest='save', action='store_true')
+    parser.set_defaults(save=False)
+    args = parser.parse_args()
+    if args.save:
+        import imageio
+        writer = imageio.get_writer('./dwa.gif', mode='I', duration=0.05)
+
     # 1 SENSOR READING
     print("Sensor reading is not implemented")
 
@@ -45,7 +55,7 @@ if __name__ == '__main__':
     # 4 GLOBAL PATH PLANNING
 
     print("Start Gloabl Planning")
-    modeGP = "FARMING" # "FARMING" "DRIVING" "MANUAL"
+    modeGP = "DRIVING" # "FARMING" "DRIVING" "MANUAL"
 
 
     if modeGP == "MANUAL":
@@ -158,7 +168,7 @@ if __name__ == '__main__':
 
     # # 5 LOCAL PATH PLANNING
 
-    modeLP = "MPC" # "MPC" "DWA"
+    modeLP = "DWA" # "MPC" "DWA"
 
 
     if modeGP == "MANUAL":
@@ -375,6 +385,9 @@ if __name__ == '__main__':
             cv2.putText(omap, f'Point Cloud Size: {len(opoint_cloud)}',
                     (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
+            if args.save:
+                writer.append_data(omap)
+
             cv2.imshow('cvwindow', omap)
             key = cv2.waitKey(1)
             if key == 27:
@@ -382,3 +395,6 @@ if __name__ == '__main__':
             elif key == ord('r'):
                 opoint_cloud = []
                 odraw_points = []
+
+        if args.save:
+            writer.close()

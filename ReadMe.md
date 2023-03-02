@@ -2,6 +2,10 @@
 
 ![alt text](./doc/Architecture.jpg)
 
+![alt text](./doc/driving.gif)
+
+![alt text](./doc/farming.gif)
+
 ### using virtualenv (recommend)
 
 virtualenv voiceassistant.venv

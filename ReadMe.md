@@ -1,5 +1,16 @@
 # Autonomous Tracktor Architecture
 
+TODO:
+- [ ] Sensor reading, sensor filtering, sensor fusion
+- [ ] Localization module
+- [ ] Neural network module
+- [ ] Mapping module
+- [x] Global planner module
+- [x] Local planner module
+- [ ] Mission module
+- [ ] Decision module
+- [x] Motor driver module
+
 ![alt text](./doc/Architecture.jpg)
 
 ![alt text](./doc/driving.gif)
@@ -25,5 +36,5 @@ Autopilot Mode:
 
 
 Manual + FPV Mode:
-/bin/python3 ~/Autonomous-Tractor/Mission/server.py
-/bin/python3 ~/Autonomous-Tractor/Mission/client.py
+/bin/python3 ~/Autonomous-Tractor/Decision/server.py
+/bin/python3 ~/Autonomous-Tractor/Decision/client.py

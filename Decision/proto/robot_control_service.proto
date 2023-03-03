@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package robot_control;
+
+service robot_control_handler{
+    rpc robot_move_forward (Empty) returns (Empty) {}
+    rpc robot_move_backward (Empty) returns (Empty) {}
+    rpc robot_turn_right (Empty) returns (Empty) {}
+    rpc robot_turn_left (Empty) returns (Empty) {}
+    rpc robot_break (Empty) returns (Empty) {}
+    rpc robot_set_speed (speed_message) returns (Empty) {}
+}
+
+message speed_message{
+    int32 speed = 1;
+}
+
+message turn_message{
+    int32 degree = 1;
+}
+
+message Empty{}

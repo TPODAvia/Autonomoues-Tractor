@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package video_streamer;
+
+service video_streamer_handler{
+    rpc send_image_chunk (Empty) returns (image_chunk);
+    rpc send_slam_payload (Empty) returns (slam_payload);
+}
+
+message image_chunk{
+    bytes image =1;
+}
+
+message slam_points {
+    float x  = 1;
+    float y  = 2;
+    float z  = 3;
+}
+
+message slam_kpts{
+
+}
+
+message slam_payload{
+    image_chunk img= 1;
+    slam_points tripoints3d = 2;
+    slam_kpts kpts = 3;
+}
+
+message  Empty{
+
+}

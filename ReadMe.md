@@ -28,6 +28,7 @@ source voiceassistant.venv/bin/activate
 
 sudo /usr/bin/python3 -m pip install -r ~/Autonomous-Tractor/requirements.txt
 
+pip install dynamic-window-approach
 
 ### Usage
 

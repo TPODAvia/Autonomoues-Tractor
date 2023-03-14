@@ -33,7 +33,6 @@ def draw_circle(event,x,y,flags,param):
 
 if __name__ == '__main__':
 
-
     import argparse
     parser = argparse.ArgumentParser(description='DWA Demo')
     parser.add_argument('--save', dest='save', action='store_true')
@@ -46,33 +45,19 @@ if __name__ == '__main__':
     # 1 SENSOR READING
     print("Sensor reading is not implemented")
 
-    # 2 LOCALISATION
-    print("Localisation reading is not implemented")
+
+    # 2 LOCALISATION(This need to be implemented SLAM)
+    goalx = 0.0
+    goaly = 0.0
+
+    startx = 50.0
+    starty = 50.0
+
 
     # 3 MAPPING
-    print("Mapping reading is not implemented")
+    modeMAP = "SQUARE" # OBSTACLE SQUARE
 
-    # 4 GLOBAL PATH PLANNING
-
-    print("Start Gloabl Planning")
-    modeGP = "DRIVING" # "FARMING" "DRIVING" "MANUAL"
-
-
-    if modeGP == "MANUAL":
-        print("Manual modeGP")
-
-    elif modeGP == "DRIVING":
-        
-        print(__file__ + " driving start!!")
-
-        # start and goal position
-        sx = 0.0  # [m]
-        sy = 0.0  # [m]
-        gx = 30.0  # [m]
-        gy = 30.0  # [m]
-        grid_size = 2.0  # [m]
-        robot_radius = 5.0  # [m]
-
+    if modeMAP == "OBSTACLE":
         # set obstacle positions
         x1, y1 = [], []
         for i in range(-10, 60,3):
@@ -94,6 +79,49 @@ if __name__ == '__main__':
             x1.append(40.0)
             y1.append(60.0 - i)
 
+    elif modeMAP == "SQUARE":
+        x1, y1 = [], []
+        for i in range(-5, 60, 4):
+            x1.append(-5.0)
+            y1.append(i)
+        for i in range(-5, 60, 4):
+            x1.append(i)
+            y1.append(60.0)
+        for i in range(-5, 60, 4):
+            x1.append(60.0)
+            y1.append(55.0-i)
+        for i in range(-5, 60, 4):
+            x1.append(55.0-i)
+            y1.append(-5.0)
+
+        x1.append(-5)
+        y1.append(-5)
+
+        # print(x1)
+        # print(y1)
+
+    # 4 GLOBAL PATH PLANNING
+
+    print("Start Gloabl Planning")
+    modeGP = "DRIVING" # "FARMING" "DRIVING" "MANUAL"
+
+
+    if modeGP == "MANUAL":
+        print("Manual modeGP")
+
+    elif modeGP == "DRIVING":
+        
+        print(__file__ + " driving start!!")
+
+        # start and goal position
+        sx = goalx  # [m]
+        sy = goaly  # [m]
+        gx = startx  # [m]
+        gy = starty  # [m]
+
+        grid_size = 2.0  # [m]
+        robot_radius = 5.0  # [m]
+
         if show_animation:  # pragma: no cover
             plt.plot(x1, y1, ".k")
             plt.plot(sx, sy, "og")
@@ -113,26 +141,6 @@ if __name__ == '__main__':
     elif modeGP == "FARMING":
 
         print(__file__ + " farming start!!")
-
-        x1, y1 = [], []
-        for i in range(-5, 60, 4):
-            x1.append(-5.0)
-            y1.append(i)
-        for i in range(-5, 60, 4):
-            x1.append(i)
-            y1.append(60.0)
-        for i in range(-5, 60, 4):
-            x1.append(60.0)
-            y1.append(55.0-i)
-        for i in range(-5, 60, 4):
-            x1.append(55.0-i)
-            y1.append(-5.0)
-
-        x1.append(-5)
-        y1.append(-5)
-
-        print(x1)
-        print(y1)
 
         # Padding
 
@@ -286,7 +294,7 @@ if __name__ == '__main__':
         
 
         ovel = (0.0, 0.0)
-        opose = (30.0, 30.0, 0)
+        opose = (startx, starty, 0)
 
         ogoal = None
         obase = [-3.0, -2.5, +3.0, +2.5]

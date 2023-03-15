@@ -176,118 +176,18 @@ if __name__ == '__main__':
 
     # # 5 LOCAL PATH PLANNING
 
-    modeLP = "DWA" # "MPC" "DWA"
+    modeLP = "DWA" # "MANUAL" "DWA"
 
 
     if modeGP == "MANUAL":
         print("Manual modeLP")
 
-    elif modeLP == "MPC":
-        print(__file__ + "  MPC start!!")
-
-        dl = 1.0  # course tick
-        cx, cy, cyaw, ck = get_straight_course3(dl,ax,ay)
-        
-        sp = calc_speed_profile(cx, cy, cyaw, TARGET_SPEED)
-
-        initial_state = State(x=cx[0], y=cy[0], yaw=0.0, v=0.0)
-
-
-        """
-        cx: course x position list
-        cy: course y position list
-        cy: course yaw position list
-        ck: course curvature list
-        sp: speed profile
-        dl: course tick [m]
-        """
-
-        goal = [cx[-1], cy[-1]]
-
-        state = initial_state
-
-        # initial yaw compensation
-        if state.yaw - cyaw[0] >= math.pi:
-            state.yaw -= math.pi * 2.0
-        elif state.yaw - cyaw[0] <= -math.pi:
-            state.yaw += math.pi * 2.0
-
-        time = 0.0
-        x = [state.x]
-        y = [state.y]
-        yaw = [state.yaw]
-        v = [state.v]
-        t = [0.0]
-        d = [0.0]
-        a = [0.0]
-        target_ind, _ = calc_nearest_index(state, cx, cy, cyaw, 0)
-
-        odelta, oa = None, None
-
-        cyaw = smooth_yaw(cyaw)
-        
-        while MAX_TIME >= time:
-            xref, target_ind, dref = calc_ref_trajectory(
-                state, cx, cy, cyaw, ck, sp, dl, target_ind)
-
-            x0 = [state.x, state.y, state.v, state.yaw]  # current state
-
-            oa, odelta, ox, oy, oyaw, ov = iterative_linear_mpc_control(
-                xref, x0, dref, oa, odelta)
-
-            if odelta is not None:
-                di, ai = odelta[0], oa[0]
-
-            state = update_state(state, ai, di)
-            time = time + DT
-
-            x.append(state.x)
-            y.append(state.y)
-            yaw.append(state.yaw)
-            v.append(state.v)
-            t.append(time)
-            d.append(di)
-            a.append(ai)
-
-
-            # 6 MOTOR DRIVER
-            try:
-                MotorDriver.set_cmd_vel(sp, yaw)
-            except:
-                pass
-
-            if check_goal(state, goal, target_ind, len(cx)):
-                print("Goal")
-                print("Task finished")
-                break
-
-            if show_animation:  # pragma: no cover
-                plt.cla()
-                # for stopping simulation with the esc key.
-                plt.plot(x1, y1, ".k")
-                plt.plot(ax, ay, "-r")
-
-                plt.gcf().canvas.mpl_connect('key_release_event',
-                        lambda event: [exit(0) if event.key == 'escape' else None])
-                if ox is not None:
-                    plt.plot(ox, oy, "xr", label="MPC")
-                plt.plot(cx, cy, "-r", label="course")
-                plt.plot(x, y, "ob", label="trajectory")
-                plt.plot(xref[0, :], xref[1, :], "xk", label="xref")
-                plt.plot(cx[target_ind], cy[target_ind], "xg", label="target")
-                plot_car(state.x, state.y, state.yaw, steer=di)
-                plt.axis("equal")
-                plt.grid(True)
-                plt.title("Time[s]:" + str(round(time, 2))
-                        + ", speed[km/h]:" + str(round(state.v * 3.6, 2)))
-                plt.pause(0.0001)
-
     elif modeLP == "DWA":
 
         print(__file__ + " DWA start!!")
 
-        cv2.namedWindow('cvwindow')
-        cv2.setMouseCallback('cvwindow', draw_circle)
+        #cv2.namedWindow('cvwindow')
+        #cv2.setMouseCallback('cvwindow', draw_circle)
 
         opoint_cloud = []
         odraw_points = []
@@ -364,7 +264,8 @@ if __name__ == '__main__':
 
             # 6 MOTOR DRIVER
             try:
-                MotorDriver.set_cmd_vel(ovel[0], ovel[1])
+                motro_dr = MotorDriver(ovel[0], ovel[1])
+                motro_dr.set_cmd_vel(ovel[0], ovel[1])
             except:
                 pass
 
@@ -381,28 +282,28 @@ if __name__ == '__main__':
             width = base[2] - base[0]
             height = base[3] - base[1]
             rect = ((pose[0], pose[1]), (width, height), np.degrees(pose[2]))
-            box = cv2.boxPoints(rect)
-            box = np.int0(box)
-            cv2.drawContours(omap,[box],0,(0,0,255),-1)
+            # box = cv2.boxPoints(rect)
+            # box = np.int0(box)
+            # cv2.drawContours(omap,[box],0,(0,0,255),-1)
 
-            # Prevent divide by zero
-            fps = int(1.0 / (time.time() - prev_time + 1e-10))
-            cv2.putText(omap, f'FPS: {fps}', (20, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # # Prevent divide by zero
+            # fps = int(1.0 / (time.time() - prev_time + 1e-10))
+            # cv2.putText(omap, f'FPS: {fps}', (20, 30),
+            #         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            cv2.putText(omap, f'Point Cloud Size: {len(opoint_cloud)}',
-                    (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            # cv2.putText(omap, f'Point Cloud Size: {len(opoint_cloud)}',
+            #         (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-            if args.save:
-                writer.append_data(omap)
+            # if args.save:
+            #     writer.append_data(omap)
 
-            cv2.imshow('cvwindow', omap)
-            key = cv2.waitKey(1)
-            if key == 27:
-                break
-            elif key == ord('r'):
-                opoint_cloud = []
-                odraw_points = []
+            # cv2.imshow('cvwindow', omap)
+            # key = cv2.waitKey(1)
+            # if key == 27:
+            #     break
+            # elif key == ord('r'):
+            #     opoint_cloud = []
+            #     odraw_points = []
 
         if args.save:
             writer.close()

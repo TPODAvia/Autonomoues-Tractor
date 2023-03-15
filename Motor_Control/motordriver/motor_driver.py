@@ -68,16 +68,16 @@ class MotorDriver(object):
         self.left_pwm2.stop(0)
         self.right_pwm1.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm1,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D3,0)
+        GPIO.output(self.D4,0)
 
     def forward(self, left_speed, right_speed):
         self.left_pwm2.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D4,0)
 
         self.left_pwm1.ChangeDutyCycle(left_speed)
         self.right_pwm1.ChangeDutyCycle(right_speed)
@@ -85,8 +85,8 @@ class MotorDriver(object):
     def reverse(self, left_speed, right_speed):
         self.left_pwm1.stop(0)
         self.right_pwm1.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.right_pwm1,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D3,0)
 
         self.left_pwm2.ChangeDutyCycle(left_speed)
         self.right_pwm2.ChangeDutyCycle(right_speed)
@@ -95,9 +95,9 @@ class MotorDriver(object):
         self.left_pwm1.stop(0)
         self.right_pwm1.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.right_pwm1,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D3,0)
+        GPIO.output(self.D4,0)
 
         self.left_pwm2.ChangeDutyCycle(left_speed)
 
@@ -105,17 +105,17 @@ class MotorDriver(object):
         self.left_pwm2.stop(0)
         self.right_pwm1.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm1,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D3,0)
+        GPIO.output(self.D4,0)
 
         self.left_pwm1.ChangeDutyCycle(left_speed)
 
     def pivot_left(self, left_speed, right_speed):         # counter clockwise turn
         self.left_pwm1.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D4,0)
 
         self.left_pwm2.ChangeDutyCycle(left_speed)
         self.right_pwm1.ChangeDutyCycle(right_speed)
@@ -125,9 +125,9 @@ class MotorDriver(object):
         self.left_pwm1.stop(0)
         self.left_pwm2.stop(0)
         self.right_pwm1.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm1,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D3,0)
 
         self.right_pwm2.ChangeDutyCycle(right_speed)
 
@@ -135,17 +135,17 @@ class MotorDriver(object):
         self.left_pwm1.stop(0)
         self.left_pwm2.stop(0)
         self.right_pwm2.stop(0)
-        GPIO.output(self.left_pwm1,0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm2,0)
+        GPIO.output(self.D1,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D4,0)
 
         self.right_pwm1.ChangeDutyCycle(right_speed)
 
     def pivot_right(self, left_speed, right_speed):        # clockwise turn
         self.left_pwm2.stop(0)
         self.right_pwm1.stop(0)
-        GPIO.output(self.left_pwm2,0)
-        GPIO.output(self.right_pwm1,0)
+        GPIO.output(self.D2,0)
+        GPIO.output(self.D3,0)
 
         self.left_pwm1.ChangeDutyCycle(left_speed)
         self.right_pwm2.ChangeDutyCycle(right_speed)

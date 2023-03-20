@@ -29,8 +29,11 @@ source voiceassistant.venv/bin/activate
 sudo /usr/bin/python3 -m pip install -r ~/Autonomous-Tractor/requirements.txt
 
 sudo apt install -y python3-scipy
+
 sudo apt install -y python3-opencv
+
 pip install dynamic-window-approach
+
 
 pip install RPi.GPIO
 

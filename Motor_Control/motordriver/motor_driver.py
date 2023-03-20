@@ -207,18 +207,18 @@ class MotorDriver(object):
         #print("W1,W2=["+str(right_wheel_rpm)+","+str(left_wheel_rpm)+"]")
 
         if right_wheel_rpm > 0.0 and left_wheel_rpm > 0.0:
-            #print("All forwards")
+            print("All forwards")
 
             if self.simple_mode:
                 # We make it turn only on one wheel
                 if right_wheel_rpm > left_wheel_rpm:
-                    #print("GO FORWARDS RIGHT")
+                    print("GO FORWARDS RIGHT")
                     self.right(right_wheel_rpm, left_wheel_rpm)
                 if right_wheel_rpm < left_wheel_rpm:
-                    #print("GO FORWARDS LEFT")
+                    print("GO FORWARDS LEFT")
                     self.left(right_wheel_rpm, left_wheel_rpm)
                 if right_wheel_rpm == left_wheel_rpm:
-                    #print("GO FORWARDS")
+                    print("GO FORWARDS")
                     self.forward(right_wheel_rpm, left_wheel_rpm)
             else:
                 #print("GO FORWARDS")
@@ -226,11 +226,11 @@ class MotorDriver(object):
 
 
         elif right_wheel_rpm > 0.0 and left_wheel_rpm == 0.0:
-            #print("Right Wheel forwards, left stop")
+            print("Right Wheel forwards, left stop")
             self.left(right_wheel_rpm, left_wheel_rpm)
 
         elif right_wheel_rpm > 0.0 and left_wheel_rpm < 0.0:
-            #print("Right Wheel forwards, left backwards --> Pivot left")
+            print("Right Wheel forwards, left backwards --> Pivot left")
             self.pivot_left(right_wheel_rpm, left_wheel_rpm)
         elif right_wheel_rpm == 0.0 and left_wheel_rpm > 0.0:
             #print("Right stop, left forwards")
@@ -245,20 +245,20 @@ class MotorDriver(object):
             if self.simple_mode:
                 # We make it turn only on one wheel
                 if abs(right_wheel_rpm) > abs(left_wheel_rpm):
-                    #print("GO BACKWARDS RIGHT")
+                    print("GO BACKWARDS RIGHT")
                     self.right_reverse(right_wheel_rpm, left_wheel_rpm)
                 if abs(right_wheel_rpm) < abs(left_wheel_rpm):
-                    #print("GO BACKWARDS LEFT")
+                    print("GO BACKWARDS LEFT")
                     self.left_reverse(right_wheel_rpm, left_wheel_rpm)
                 if right_wheel_rpm == left_wheel_rpm:
-                    #print("GO BACKWARDS")
+                    print("GO BACKWARDS")
                     self.reverse(right_wheel_rpm, left_wheel_rpm)
             else:
                 self.reverse(right_wheel_rpm, left_wheel_rpm)
 
 
         elif right_wheel_rpm == 0.0 and left_wheel_rpm == 0.0:
-            #print("Right stop, left stop")
+            print("Right stop, left stop")
             self.stop()
         else:
             assert False, "A case wasn't considered==>"+str(right_wheel_rpm)+","+str(left_wheel_rpm)

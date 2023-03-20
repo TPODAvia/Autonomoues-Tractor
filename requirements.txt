@@ -11,4 +11,4 @@ Cython
 pygame
 grpcio
 virtualenv
-cvxpy
+# cvxpy

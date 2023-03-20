@@ -1,6 +1,6 @@
 from Global_Planning.GridBasedSweepCPP.grid_based_sweep_coverage_path_planner import *
 from Global_Planning.AStar.a_star import *
-from Local_Planning.model_predictive_speed_and_steer_control.model_predictive_speed_and_steer_control import *
+from #Local_Planning.model_predictive_speed_and_steer_control.model_predictive_speed_and_steer_control import *
 from Local_Planning.DWA.demo import *
 
 try:

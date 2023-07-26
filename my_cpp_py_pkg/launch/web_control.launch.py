@@ -25,9 +25,14 @@ def generate_launch_description():
                 'camera_frame_id': 'camera_link_optical'
                 }]
         ),
+        # Node(
+        #     package='my_cpp_py_pkg',
+        #     executable='cpp_executable',
+        #     name='my_node'
+        # )
         Node(
             package='my_cpp_py_pkg',
-            executable='cpp_executable',
+            executable='py_node.py',
             name='my_node'
         )
     ])

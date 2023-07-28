@@ -13,3 +13,8 @@ rosdep install --from-paths src --ignore-src -r -y
 sudo apt install ros-humble-vision-opencv && sudo apt install ros-humble-message-filters
 
 https://github.com/astronaut71/orb_slam3_ros2
+
+
+https://github.com/ros2/teleop_twist_keyboard.git
+
+https://github.com/RobotWebTools/web_video_server.git

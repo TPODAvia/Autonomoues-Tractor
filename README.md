@@ -136,11 +136,20 @@ sudo apt-get install i2c-tools python3-smbus
 sudo adduser ubuntu i2c
 i2cdetect -y -r 1
 sudo i2cget -y 1 0x68 0x75
-apt-get install -y libi2c-dev
-https://github.com/hiwad-aziz/ros2_mpu6050_driver.git
+
+sudo apt-get install libi2c-dev
+git clone https://github.com/hiwad-aziz/ros2_mpu6050_driver.git
 sudo chmod 777 /dev/ttyUSB0
+git clone https://github.com/orascheg/ros2GPSx.git
 ```
 
+### Install path planner
+```bash
+git clone https://github.com/nobleo/full_coverage_path_planner.git
+cd full_coverage_path_planner
+git checkout ros2
+rosdep install --from-paths src --ignore-src -r -y
+```
 ### How to use
 
 ```bash

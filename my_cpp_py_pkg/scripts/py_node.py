@@ -36,14 +36,14 @@ class CmdVelSubscriber(Node):
         self.angular_vel = 0
 
         self.last_msg_time = time.time()
-        self.create_task(self.check_timeout())
+        # self.create_task(self.check_timeout())
 
     def listener_callback(self, msg):
 
         # We use the linear_x-linear_vel to slowi the changes of the speed
         # The constant 0.1 is represent how fast the changes is
         self.linear_vel  = (msg.linear.x - self.linear_vel)*0.1
-        self.angular_vel = (msg.angular.z - self.angular_vel)*0.1
+        self.angular_vel = -(msg.angular.z - self.angular_vel)*0.1
         l_distance = 1
 
         wheel_left  = self.linear_vel - self.angular_vel*l_distance/2
@@ -61,21 +61,21 @@ class CmdVelSubscriber(Node):
 
         if wheel_right < 0:
             self.pwm19.ChangeDutyCycle(0)
-            self.pwm13.ChangeDutyCycle((1-math.exp(-abs(wheel_right)/2))*100)
+            self.pwm13.ChangeDutyCycle((1-math.exp(-abs(wheel_right)/2))*60)
         else:
-            self.pwm19.ChangeDutyCycle((1-math.exp(-abs(wheel_right)/2))*100)
+            self.pwm19.ChangeDutyCycle((1-math.exp(-abs(wheel_right)/2))*60)
             self.pwm13.ChangeDutyCycle(0)
 
         self.last_msg_time = time.time()
 
-    async def check_timeout(self):
-        while rclpy.ok():
-            if time.time() - self.last_msg_time > TIMEOUT:
-                self.pwm18.ChangeDutyCycle(0)
-                self.pwm12.ChangeDutyCycle(0)
-                self.pwm13.ChangeDutyCycle(0)
-                self.pwm19.ChangeDutyCycle(0)
-            await asyncio.sleep(1)
+    # async def check_timeout(self):
+    #     while rclpy.ok():
+    #         if time.time() - self.last_msg_time > TIMEOUT:
+    #             self.pwm18.ChangeDutyCycle(0)
+    #             self.pwm12.ChangeDutyCycle(0)
+    #             self.pwm13.ChangeDutyCycle(0)
+    #             self.pwm19.ChangeDutyCycle(0)
+    #         await asyncio.sleep(1)
 
 def main(args=None):
     rclpy.init(args=args)

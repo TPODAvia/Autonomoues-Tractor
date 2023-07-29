@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(my_cpp_py_pkg)
+project(main_pkg)
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)

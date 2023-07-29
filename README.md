@@ -102,6 +102,18 @@ cd ~/colcon_ws/src
 sudo chmod 755 /ROS2-installation/OpenCV-4-5-5.sh
 ./ROS2-installation/OpenCV-4-5-5.sh
 ```
+
+### Check i2c and usb port
+
+```bash
+# https://github.com/jefmenegazzo/mpu-i2c-drivers-python
+sudo apt-get install i2c-tools python3-smbus libi2c-dev
+sudo adduser ubuntu i2c
+i2cdetect -y -r 1
+sudo i2cget -y 1 0x68 0x75
+sudo chmod 777 /dev/ttyUSB0
+```
+
 ### Compile ROS2 project
 
 ```bash
@@ -121,6 +133,10 @@ cd ..
 
 git clone https://github.com/ros2/teleop_twist_keyboard.git
 
+git clone https://github.com/orascheg/ros2GPSx.git
+
+git clone https://github.com/hiwad-aziz/ros2_mpu6050_driver.git
+
 cd ~/colcon_ws
 echo "source ~/colcon_ws/install/setup.bash" >> ~/.bashrc
 rosdep install --from-paths src --ignore-src -r -y
@@ -128,33 +144,20 @@ colcon build --symlink-install --packages-select orbslam3
 colcon build
 ```
 
-#### Working with GPS and IMU
-```bash
-https://github.com/jefmenegazzo/mpu-i2c-drivers-python
-sudo apt-get install i2c-tools python3-smbus
-# pip install smbus2 ahrs
-sudo adduser ubuntu i2c
-i2cdetect -y -r 1
-sudo i2cget -y 1 0x68 0x75
-
-sudo apt-get install libi2c-dev
-git clone https://github.com/hiwad-aziz/ros2_mpu6050_driver.git
-sudo chmod 777 /dev/ttyUSB0
-git clone https://github.com/orascheg/ros2GPSx.git
-```
-
 ### Install path planner
 ```bash
 git clone https://github.com/nobleo/full_coverage_path_planner.git
 cd full_coverage_path_planner
 git checkout ros2
+cd ~/colcon_ws
 rosdep install --from-paths src --ignore-src -r -y
+colcon build
 ```
 ### How to use
 
 ```bash
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
 cd ~/colcon_ws
-ros2 launch my_cpp_py_pkg camera.launch.py
-ros2 launch my_cpp_py_pkg web_control.launch.py
+ros2 launch main_pkg camera.launch.py
+ros2 launch main_pkg web_control.launch.py
 ```

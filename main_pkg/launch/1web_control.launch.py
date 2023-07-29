@@ -1,6 +1,6 @@
 # ros2 run teleop_twist_keyboard teleop_twist_keyboard
-# ros2 launch my_cpp_py_pkg camera.launch.py
-# ros2 launch my_cpp_py_pkg web_control.launch.py
+# ros2 launch main_pkg camera.launch.py
+# ros2 launch main_pkg web_control.launch.py
 # ros2 run teleop_twist_keyboard teleop_twist_keyboard
 # http://10.100.190.77:8080/
 import os
@@ -27,12 +27,12 @@ def generate_launch_description():
                 }]
         ),
         # Node(
-        #     package='my_cpp_py_pkg',
+        #     package='main_pkg',
         #     executable='cpp_executable',
         #     name='my_node'
         # )
         Node(
-            package='my_cpp_py_pkg',
+            package='main_pkg',
             executable='py_node.py',
             name='my_node'
         )

@@ -1,6 +1,6 @@
 # ros2 run teleop_twist_keyboard teleop_twist_keyboard
-# ros2 launch main_pkg camera.launch.py
-# ros2 launch main_pkg web_control.launch.py
+# ros2 launch main_pkg 0camera.launch.py
+# ros2 launch main_pkg 1web_control.launch.py
 # ros2 run teleop_twist_keyboard teleop_twist_keyboard
 # http://10.100.190.77:8080/
 import os

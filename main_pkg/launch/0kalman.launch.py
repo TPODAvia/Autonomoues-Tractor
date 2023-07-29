@@ -1,26 +1,41 @@
+# ros2 launch mpu6050driver mpu6050driver_launch.py
+# ros2 run gpsx gps_node
+
 import os
  
 from launch import LaunchDescription
 from launch_ros.actions import Node
- 
+from ament_index_python.packages import get_package_share_directory
+import launch_ros.actions
+import os
+import yaml
+from launch.substitutions import EnvironmentVariable
+import pathlib
+import launch.actions
+from launch.actions import DeclareLaunchArgument
+
 def generate_launch_description():
  
  
  
     return LaunchDescription([
         Node(
-            package='web_video_server',
-            executable='web_video_server',
-            name='web_video_server',
+            package='mpu6050driver',
+            executable='mpu6050driver_launch.py',
+            name='mpu6050driver',
             output='screen',
         ),
         Node(
-            package='v4l2_camera',
-            executable='v4l2_camera_node',
+            package='gpsx',
+            executable='gps_node',
+            name='gpsx',
             output='screen',
-            parameters=[{
-                'image_size': [640,480],
-                'camera_frame_id': 'camera_link_optical'
-                }]
-    )
+        ),
+        launch_ros.actions.Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("robot_localization"), 'params', 'ekf.yaml')],
+        )
     ])

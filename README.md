@@ -255,4 +255,9 @@ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 cd ~/colcon_ws
 ros2 launch main_pkg 0camera.launch.py
 ros2 launch main_pkg 3web_control.launch.py
+
+cd /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/
+tar -xf ORBvoc.txt.tar.gz
+cd
+ros2 run orbslam3 mono /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/ubuntu/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
 ```

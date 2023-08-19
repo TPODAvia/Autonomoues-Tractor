@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial('/dev/ttyUSB1')
+ser = serial.Serial('/dev/ttyUSB0')
 while True:
     ser_bytes = ser.readline()
     if not ser_bytes:

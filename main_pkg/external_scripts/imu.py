@@ -1,3 +1,7 @@
+# to run this script: 
+# python3 -mpip install smbus2
+# pip install mpu9250-jmdev
+
 import time
 from mpu9250_jmdev.registers import *
 from mpu9250_jmdev.mpu_9250 import MPU9250

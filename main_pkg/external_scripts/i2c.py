@@ -2,7 +2,7 @@ import smbus
 import time
 
 bus = smbus.SMBus(1)  # Create a new I2C bus
-address = 0x5c  # I2C address of the device
+address = 0x68  # I2C address of the device
 
 while True:
     data = bus.read_byte(address)  # Read a single byte from the device

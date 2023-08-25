@@ -1,9 +1,22 @@
 import serial
 
-ser = serial.Serial('/dev/ttyUSB0')
+ser = serial.Serial('/dev/ttyACM0')
 while True:
     ser_bytes = ser.readline()
     if not ser_bytes:
         break
     decoded_bytes = ser_bytes.decode('utf-8')
-    print(decoded_bytes)
+    # print(decoded_bytes)
+
+    if "GPGGA" in decoded_bytes:
+        # print(decoded_bytes)
+        if int(decoded_bytes.split(",")[7]) > 1:
+            print("Time: ", decoded_bytes.split(",")[1])
+            print("Latitude: ", decoded_bytes.split(",")[2])
+            print("Longitude: ", decoded_bytes.split(",")[4])
+            print("Altitude: ", decoded_bytes.split(",")[9])
+            print("geoid above WGS84: ", decoded_bytes.split(",")[11])
+            print("Number of Satellites: ", decoded_bytes.split(",")[7])
+        else:
+            print("Not enought sattelite: ", decoded_bytes.split(",")[7])
+            break

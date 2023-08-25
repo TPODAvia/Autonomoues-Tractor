@@ -43,15 +43,17 @@ def generate_launch_description():
     parameters_file_dir = os.path.join(robot_localization_dir, 'launch')
     parameters_file_path = os.path.join(parameters_file_dir, 'dual_ekf_navsat_example.yaml')
     os.environ['FILE_PATH'] = str(parameters_file_dir)
-
+    serial_port = "/dev/ttyACM0"
 
     return LaunchDescription([
         ld,
 
         Node(
             package='main_pkg',
-            executable='fake_gps.py',
-            name='fake_gps'
+            executable='real_gps.py',
+            name='real_gps',
+            output='screen',
+            parameters=[serial_port],
         ),
 
         # Node(

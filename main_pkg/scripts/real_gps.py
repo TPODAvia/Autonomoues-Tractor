@@ -6,17 +6,38 @@ from rclpy.node import Node
 from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import NavSatStatus
 from std_msgs.msg import Header
+import serial
 
 
 class GpsNode(Node):
 
     def __init__(self):
-        super().__init__('fake_gps_node')
+        super().__init__('gps_node')
         self.publisher_ = self.create_publisher(NavSatFix, 'gps/fix', 10)
+
+        # Add the parameter
+        self.declare_parameter('serial_port', '/dev/ttyACM0')
+        # Get the parameter value
+        self.serial_port = self.get_parameter('serial_port').get_parameter_value().string_value
+
+        self.ser = serial.Serial(self.serial_port)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
 
     def timer_callback(self):
+
+        ser_bytes = self.ser.readline()
+        if not ser_bytes:
+            return
+        decoded_bytes = ser_bytes.decode('utf-8')
+
+        if "GPGGA" in decoded_bytes:
+            # print(decoded_bytes)
+            if int(decoded_bytes.split(",")[7]) < 3:
+                self.get_logger().info('Not enought sattelite: %s' % decoded_bytes.split(",")[7])
+                return
+
+
             msg = NavSatFix()
             msg.header = Header()
             msg.header.stamp = self.get_clock().now().to_msg()
@@ -26,11 +47,11 @@ class GpsNode(Node):
             msg.status.service = NavSatStatus.SERVICE_GPS
 
             # Position in degrees.
-            msg.latitude = 57.047218
-            msg.longitude = 9.920100
+            msg.latitude = int(decoded_bytes.split(",")[2])
+            msg.longitude = int(decoded_bytes.split(",")[4])
 
             # Altitude in metres.
-            msg.altitude = 1.15
+            msg.altitude = int(decoded_bytes.split(",")[9])
 
             msg.position_covariance[0] = 0
             msg.position_covariance[4] = 0

@@ -89,13 +89,17 @@ Start the watchdog service with the command `sudo systemctl start watchdog` and 
 
 Verify that the watchdog service is running with the command `sudo systemctl status watchdog`. If it's running correctly, you should see output indicating that the service is active.
 
-### Install ORB-SLAM3
+### Install Navigation Stack
 
 ```bash
 sudo apt-get update
-sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-v4l2-camera -y
-# sudo apt-get install libdc1394-dev
+sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-v4l2-camera ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup -y
 
+# sudo apt-get install libdc1394-dev
+```
+
+### Install ORB-SLAM3 (deprecated and optional)
+```bash
 cd
 git clone https://github.com/TPODAvia/ORB-SLAM3-STEREO-FIXED.git ORB_SLAM3
 cd ORB_SLAM3
@@ -103,14 +107,15 @@ chmod +x build.sh
 ./build.sh
 https://github.com/astronaut71/orb_slam3_ros2
 
-```
-### Install OpenCV
-
-```bash
 # wget https://github.com/Qengineering/Install-OpenCV-Raspberry-Pi-32-bits/raw/main/OpenCV-4-5-5.sh
 cd ~/colcon_ws/src
 sudo chmod 755 /ROS2-installation/OpenCV-4-5-5.sh
 ./ROS2-installation/OpenCV-4-5-5.sh
+
+cd ~/colcon_ws/src
+
+git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
+cd ~/colcon_ws
 ```
 
 ### Check I2C and USB port
@@ -127,8 +132,6 @@ sudo chmod 777 /dev/ttyUSB0
 
 ```bash
 cd ~/colcon_ws/src
-
-git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
 
 git clone https://github.com/cra-ros-pkg/robot_localization.git
 cd robot_localization

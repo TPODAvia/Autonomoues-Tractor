@@ -21,6 +21,9 @@ def generate_launch_description():
             parameters=[{
                 'image_size': [640,480],
                 'camera_frame_id': 'camera_link_optical'
-                }]
-    )
+                }],
+            remappings=[
+                ('/image_raw', '/camera'),
+            ],
+        )
     ])

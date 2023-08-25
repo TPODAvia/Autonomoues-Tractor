@@ -89,17 +89,13 @@ Start the watchdog service with the command `sudo systemctl start watchdog` and 
 
 Verify that the watchdog service is running with the command `sudo systemctl status watchdog`. If it's running correctly, you should see output indicating that the service is active.
 
-### Install Navigation Stack
+### Install ORB-SLAM3
 
 ```bash
 sudo apt-get update
-sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-v4l2-camera ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup -y
-
+sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-v4l2-camera ros-humble-image-tools -y
 # sudo apt-get install libdc1394-dev
-```
 
-### Install ORB-SLAM3 (deprecated and optional)
-```bash
 cd
 git clone https://github.com/TPODAvia/ORB-SLAM3-STEREO-FIXED.git ORB_SLAM3
 cd ORB_SLAM3
@@ -107,15 +103,14 @@ chmod +x build.sh
 ./build.sh
 https://github.com/astronaut71/orb_slam3_ros2
 
+```
+### Install OpenCV
+
+```bash
 # wget https://github.com/Qengineering/Install-OpenCV-Raspberry-Pi-32-bits/raw/main/OpenCV-4-5-5.sh
 cd ~/colcon_ws/src
 sudo chmod 755 /ROS2-installation/OpenCV-4-5-5.sh
 ./ROS2-installation/OpenCV-4-5-5.sh
-
-cd ~/colcon_ws/src
-
-git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
-cd ~/colcon_ws
 ```
 
 ### Check I2C and USB port
@@ -132,6 +127,8 @@ sudo chmod 777 /dev/ttyUSB0
 
 ```bash
 cd ~/colcon_ws/src
+
+git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
 
 git clone https://github.com/cra-ros-pkg/robot_localization.git
 cd robot_localization
@@ -262,5 +259,9 @@ ros2 launch main_pkg 3web_control.launch.py
 cd /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/
 tar -xf ORBvoc.txt.tar.gz
 cd
-ros2 run orbslam3 mono /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/ubuntu/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
+
+
+ros2 run image_tools cam2image -t camera -r image:=camera --ros-args --params-file /home/vboxuser/colcon_ws/src/params.yaml
+
+ros2 run orbslam3 mono /home/vboxuser/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/vboxuser/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
 ```

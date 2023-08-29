@@ -35,6 +35,7 @@ install(PROGRAMS
   scripts/py_node.py
   scripts/fake_gps.py
   scripts/real_gps.py
+  scripts/web.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

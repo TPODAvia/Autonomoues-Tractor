@@ -25,20 +25,21 @@ private:
   void gpsCallback(const sensor_msgs::msg::NavSatFix::SharedPtr msg)
   {
     // Save the data to a file
-    std::ofstream file("/home/ubuntu/file.txt", std::ios::app);
-    if (file.is_open())
-    {
-      file << "Latitude: " << msg->latitude << std::endl;
-      file << "Longitude: " << msg->longitude << std::endl;
-      file << "Altitude: " << msg->altitude << std::endl;
-      file << "Velocity x: " << Velocity_x_ << std::endl;
-      file << "position_covariance: " << msg->position_covariance << std::endl;
-      file.close();
-    }
-    else
-    {
-      RCLCPP_ERROR(get_logger(), "Failed to open file");
-    }
+    // std::ofstream file("/home/ubuntu/file.txt", std::ios::app);
+    // if (file.is_open())
+    // {
+    //   file << "Latitude: " << msg->latitude << std::endl;
+    //   file << "Longitude: " << msg->longitude << std::endl;
+    //   file << "Altitude: " << msg->altitude << std::endl;
+    //   file << "Velocity x: " << Velocity_x_ << std::endl;
+    //   // file << "position_covariance: " << msg->position_covariance << std::endl;
+    //   file.close();
+    // }
+    // else
+    // {
+    //   RCLCPP_ERROR(get_logger(), "Failed to open file");
+    // }
+    NULL;
   }
 
   void imuCallback(const sensor_msgs::msg::Imu::SharedPtr msg)

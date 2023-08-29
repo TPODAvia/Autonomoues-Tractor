@@ -56,12 +56,12 @@ def generate_launch_description():
             parameters=[serial_port],
         ),
 
-        # Node(
-        #     package='gpsx',
-        #     executable='gps_node',
-        #     name='gpsx',
-        #     output='screen',
-        # ),
+        Node(
+            package='web_video_server',
+            executable='web_video_server',
+            name='web_video_server',
+            output='screen',
+        ),
 
           
         launch_ros.actions.Node(

@@ -47,11 +47,15 @@ class GpsNode(Node):
             msg.status.service = NavSatStatus.SERVICE_GPS
 
             # Position in degrees.
-            msg.latitude = float(decoded_bytes.split(",")[2])*0.01
-            msg.longitude = float(decoded_bytes.split(",")[4])*0.01
+            if decoded_bytes.split(",")[2] == '':
+                msg.latitude = 21.02
+                msg.longitude = 105.48
+                msg.altitude = 80.80
             
-            # Altitude in metres.
-            msg.altitude = float(decoded_bytes.split(",")[9])
+            else:
+                msg.latitude = float(decoded_bytes.split(",")[2])*0.01
+                msg.longitude = float(decoded_bytes.split(",")[4])*0.01
+                msg.altitude = float(decoded_bytes.split(",")[9])
 
             msg.position_covariance[0] = 0
             msg.position_covariance[4] = 0

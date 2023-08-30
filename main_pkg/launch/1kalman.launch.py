@@ -57,9 +57,9 @@ def generate_launch_description():
         ),
 
         Node(
-            package='web_video_server',
-            executable='web_video_server',
-            name='web_video_server',
+            package='main_pkg',
+            executable='web.py',
+            name='web_node',
             output='screen',
         ),
 

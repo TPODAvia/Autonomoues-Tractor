@@ -24,6 +24,7 @@ public:
 private:
   void gpsCallback(const sensor_msgs::msg::NavSatFix::SharedPtr msg)
   {
+    std::cout<< "Hello" << std::endl;
     // Save the data to a file
     // std::ofstream file("/home/ubuntu/file.txt", std::ios::app);
     // if (file.is_open())
@@ -39,7 +40,7 @@ private:
     // {
     //   RCLCPP_ERROR(get_logger(), "Failed to open file");
     // }
-    NULL;
+    // NULL;
   }
 
   void imuCallback(const sensor_msgs::msg::Imu::SharedPtr msg)

@@ -12,5 +12,6 @@
         "servo_constants.h": "c",
         "random.h": "c"
     },
-    "ros.distro": "humble"
+    "ros.distro": "humble",
+    "cmake.sourceDirectory": "/home/ubuntu/colcon_ws/src/robot_localization"
 }

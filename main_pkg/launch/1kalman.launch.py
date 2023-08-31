@@ -38,16 +38,10 @@ def generate_launch_description():
     ld.add_action(params_declare)
     ld.add_action(mpu6050driver_node)
 
-
-    robot_localization_dir = get_package_share_directory('main_pkg')
-    parameters_file_dir = os.path.join(robot_localization_dir, 'launch')
-    parameters_file_path = os.path.join(parameters_file_dir, 'dual_ekf_navsat_example.yaml')
-    os.environ['FILE_PATH'] = str(parameters_file_dir)
     serial_port = "/dev/ttyACM0"
 
     return LaunchDescription([
         ld,
-
 
         # Node(
         #     package='main_pkg',
@@ -65,12 +59,12 @@ def generate_launch_description():
             parameters=[serial_port],
         ),
 
-        Node(
-            package='main_pkg',
-            executable='web.py',
-            name='web_node',
-            output='screen',
-        ),
+        # Node(
+        #     package='main_pkg',
+        #     executable='web.py',
+        #     name='web_node',
+        #     output='screen',
+        # ),
 
         Node(
             package='main_pkg',

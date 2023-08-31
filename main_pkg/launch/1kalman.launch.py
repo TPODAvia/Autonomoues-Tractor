@@ -48,10 +48,19 @@ def generate_launch_description():
     return LaunchDescription([
         ld,
 
+
+        # Node(
+        #     package='main_pkg',
+        #     executable='real_gps.py',
+        #     name='real_gps',
+        #     output='screen',
+        #     parameters=[serial_port],
+        # ),
+
         Node(
             package='main_pkg',
-            executable='real_gps.py',
-            name='real_gps',
+            executable='fake_gps.py',
+            name='fake_gps',
             output='screen',
             parameters=[serial_port],
         ),
@@ -63,18 +72,38 @@ def generate_launch_description():
             output='screen',
         ),
 
-          
-        launch_ros.actions.Node(
-                package='robot_localization', 
-                executable='navsat_transform_node', 
-                name='navsat_transform',
-                output='screen',
-                parameters=[parameters_file_path],
-                remappings=[('imu/data', 'imu/data'),
-                            ('gps/fix', 'gps/fix'), 
-                            ('gps/filtered', 'gps/filtered'),
-                            ('odometry/gps', 'odometry/gps'),
-                            ('odometry/filtered', 'odometry/global')]           
+        Node(
+            package='main_pkg',
+            executable='odom.py',
+            name='odom_node',
+            output='screen',
+        ),
 
-            )
+        # Input: imu/data_raw (sensor_msgs/Imu) imu/mag (sensor_msgs/MagneticField)
+        # Output: imu/data (sensor_msgs/Imu)
+        # launch_ros.actions.Node(
+        #     package='imu_filter_madgwick',
+        #     executable='imu_filter_madgwick_node',
+        #     name='imu_filter',
+        #     output='screen',
+        #     parameters=[os.path.join(get_package_share_directory('main_pkg'), 'launch' , 'imu_filter.yaml')],
+        # ),
+
+        launch_ros.actions.Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("main_pkg"), 'launch', 'ekf.yaml')],
+            remappings=[('example/imu', 'imu'),
+                        ('example/odom', 'odometry/filtered')]      
+           ),
+
+        launch_ros.actions.Node(
+            package='robot_localization',
+            executable='navsat_transform_node',
+            name='navsat_transform_node',
+            output='screen',
+            parameters=[os.path.join(get_package_share_directory("main_pkg"), 'launch', 'navsat_transform.yaml')],
+           ),
     ])

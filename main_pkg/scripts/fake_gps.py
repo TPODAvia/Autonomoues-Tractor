@@ -20,7 +20,7 @@ class GpsNode(Node):
             msg = NavSatFix()
             msg.header = Header()
             msg.header.stamp = self.get_clock().now().to_msg()
-            msg.header.frame_id = "gps"
+            msg.header.frame_id = "base_link"
 
             msg.status.status = NavSatStatus.STATUS_FIX
             msg.status.service = NavSatStatus.SERVICE_GPS

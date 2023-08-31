@@ -17,8 +17,9 @@ class WebPublisherNode(Node):
         self.subscription_imu = self.create_subscription(Imu, 'imu', self.imu_callback, 10)
 
     def gps_callback(self, msg):
-        self.get_logger().info('Received: "%s"' % msg.position_covariance)
-        global_data = f"GPS: [Lat, Long, Alt]=[{msg.latitude},{msg.longitude},{msg.altitude}] \n [N, E, Up]=[]"
+        pos_cov = [str(i) for i in msg.position_covariance]
+        # self.get_logger().info('Received: "%s"' % msg.position_covariance)
+        global_data = f"GPS: [Lat, Long, Alt]=[{msg.latitude},{msg.longitude},{msg.altitude}] \n [N, E, Up]=[{pos_cov}]"
         WebRequestHandler.update_latest_data(global_data)
 
     def imu_callback(self, msg):
@@ -46,9 +47,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     @classmethod
     def update_latest_data(cls, data):
+        # print(f"Received data update: {data}")  # Debug log message
         if data.startswith("GPS"):
             cls.latest_gps_data = data
-        elif data.startswith("IMU"):
+        if data.startswith("IMU"):
             cls.latest_imu_data = data
 
 def start_server():

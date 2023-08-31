@@ -264,4 +264,10 @@ cd
 ros2 run image_tools cam2image -t camera -r image:=camera --ros-args --params-file /home/vboxuser/colcon_ws/src/params.yaml
 
 ros2 run orbslam3 mono /home/vboxuser/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/vboxuser/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
+
+ros2 launch main_pkg 1kalman.launch.py
+ros2 launch mpu6050driver mpu6050driver_launch.py
+
+ros2 launch robot_localization navsat_transform.launch.py
+ros2 launch robot_localization ekf.launch.py
 ```

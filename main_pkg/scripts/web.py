@@ -17,13 +17,14 @@ class WebPublisherNode(Node):
         self.subscription_imu = self.create_subscription(Imu, 'imu', self.imu_callback, 10)
 
     def gps_callback(self, msg):
-        pos_cov = [str(i) for i in msg.position_covariance]
+        # pos_cov = [str(i) for i in msg.position_covariance]
         # self.get_logger().info('Received: "%s"' % msg.position_covariance)
-        global_data = f"GPS: [Lat, Long, Alt]=[{msg.latitude},{msg.longitude},{msg.altitude}] \n [N, E, Up]=[{pos_cov}]"
+        global_data = f"GPS: [Lat, Long, Alt]=[{msg.latitude},{msg.longitude},{msg.altitude}]"
         WebRequestHandler.update_latest_data(global_data)
 
     def imu_callback(self, msg):
-        global_data = f"IMU: Linear Acceleration [XYZ]=[{msg.linear_acceleration.x},{msg.linear_acceleration.y},{msg.linear_acceleration.z}]"
+        global_data = f"IMU: Linear Acceleration [XYZ]=[{msg.linear_acceleration.x},{msg.linear_acceleration.y},{msg.linear_acceleration.z}] \
+        Quaternion [x, y, z, w]=[{msg.orientation.x},{msg.orientation.y},{msg.orientation.z},{msg.orientation.w}]"
         WebRequestHandler.update_latest_data(global_data)
 
 class WebRequestHandler(BaseHTTPRequestHandler):

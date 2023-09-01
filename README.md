@@ -144,7 +144,7 @@ git clone https://github.com/ros2/teleop_twist_keyboard.git
 
 git clone https://github.com/orascheg/ros2GPSx.git
 
-git clone https://github.com/hiwad-aziz/ros2_mpu6050_driver.git
+git clone https://github.com/hiwad-aziz/ros2_mpu9250_driver.git
 
 git clone https://github.com/nobleo/full_coverage_path_planner.git
 cd full_coverage_path_planner

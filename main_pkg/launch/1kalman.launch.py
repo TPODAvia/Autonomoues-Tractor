@@ -18,27 +18,25 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
  
     ld = LaunchDescription()
-    share_dir = get_package_share_directory('mpu6050driver')
+    share_dir = get_package_share_directory('mpu9250driver')
     parameter_file = LaunchConfiguration('params_file')
 
     params_declare = DeclareLaunchArgument('params_file',
                                            default_value=os.path.join(
-                                               share_dir, 'params', 'mpu6050.yaml'),
+                                               share_dir, 'params', 'mpu9250.yaml'),
                                            description='Path to the ROS2 parameters file to use.')
 
-    mpu6050driver_node = Node(
-        package='mpu6050driver',
-        executable='mpu6050driver',
-        name='mpu6050driver_node',
-        output="screen",
+    mpu9250driver_node = Node(
+        package='mpu9250driver',
+        executable='mpu9250driver',
+        name='mpu9250driver_node',
+        # output="screen",
         emulate_tty=True,
         parameters=[parameter_file]
     )
 
     ld.add_action(params_declare)
-    ld.add_action(mpu6050driver_node)
-
-    serial_port = "/dev/ttyACM0"
+    ld.add_action(mpu9250driver_node)
 
     return LaunchDescription([
         ld,
@@ -48,7 +46,7 @@ def generate_launch_description():
         #     executable='real_gps.py',
         #     name='real_gps',
         #     output='screen',
-        #     parameters=[serial_port],
+        #     parameters=["/dev/ttyACM0"],
         # ),
 
         Node(
@@ -56,15 +54,14 @@ def generate_launch_description():
             executable='fake_gps.py',
             name='fake_gps',
             output='screen',
-            parameters=[serial_port],
         ),
 
-        # Node(
-        #     package='main_pkg',
-        #     executable='web.py',
-        #     name='web_node',
-        #     output='screen',
-        # ),
+        Node(
+            package='main_pkg',
+            executable='web.py',
+            name='web_node',
+            output='screen',
+        ),
 
         Node(
             package='main_pkg',
@@ -72,16 +69,6 @@ def generate_launch_description():
             name='odom_node',
             output='screen',
         ),
-
-        # Input: imu/data_raw (sensor_msgs/Imu) imu/mag (sensor_msgs/MagneticField)
-        # Output: imu/data (sensor_msgs/Imu)
-        # launch_ros.actions.Node(
-        #     package='imu_filter_madgwick',
-        #     executable='imu_filter_madgwick_node',
-        #     name='imu_filter',
-        #     output='screen',
-        #     parameters=[os.path.join(get_package_share_directory('main_pkg'), 'launch' , 'imu_filter.yaml')],
-        # ),
 
         launch_ros.actions.Node(
             package='robot_localization',

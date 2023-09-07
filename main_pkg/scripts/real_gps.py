@@ -2,6 +2,7 @@
 import rclpy
 import os
 from rclpy.node import Node
+from std_msgs.msg import String
 
 from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import NavSatStatus
@@ -14,17 +15,18 @@ class GpsNode(Node):
     def __init__(self):
         super().__init__('gps_node')
         self.publisher_ = self.create_publisher(NavSatFix, 'gps/fix', 10)
+        self.publisher_ = self.create_publisher(String, 'gps/velocity', 10)
 
         # Add the parameter
-        self.declare_parameter('serial_port', '/dev/ttyACM0')
+        self.declare_parameter('serial_port', '/dev/ttyUSB0')
         # Get the parameter value
         self.serial_port = self.get_parameter('serial_port').get_parameter_value().string_value
 
         self.ser = serial.Serial(self.serial_port)
         timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.gps = self.create_timer(timer_period, self.gps_callback)
 
-    def timer_callback(self):
+    def gps_callback(self):
 
         ser_bytes = self.ser.readline()
         if not ser_bytes:
@@ -32,11 +34,14 @@ class GpsNode(Node):
         decoded_bytes = ser_bytes.decode('utf-8')
 
         if "GPGGA" in decoded_bytes:
-            # print(decoded_bytes)
-            if int(decoded_bytes.split(",")[7]) < 3:
-                self.get_logger().info('Not enought sattelite: %s' % decoded_bytes.split(",")[7])
+            print(decoded_bytes)
+            try:
+                if int(decoded_bytes.split(",")[7]) < 3:
+                    self.get_logger().info('Not enought sattelite: %s' % decoded_bytes.split(",")[7])
+                    return
+            except: 
+                self.get_logger().info('Bad connection')
                 return
-
 
             msg = NavSatFix()
             msg.header = Header()
@@ -48,9 +53,9 @@ class GpsNode(Node):
 
             # Position in degrees.
             if decoded_bytes.split(",")[2] == '':
-                msg.latitude = 21.02
-                msg.longitude = 105.48
-                msg.altitude = 80.80
+                msg.latitude = -1
+                msg.longitude = -1
+                msg.altitude = -1
             
             else:
                 msg.latitude = float(decoded_bytes.split(",")[2])*0.01
@@ -64,6 +69,11 @@ class GpsNode(Node):
 
             self.publisher_.publish(msg)
             self.best_pos_a = None
+
+            # vel publish
+            gps_vel = String()
+            gps_vel.data = decoded_bytes.split(",")[6]
+            self.publisher_.publish(gps_vel)
 
 
 def main(args=None):

@@ -34,13 +34,13 @@ class GpsNode(Node):
             if not ser_bytes:
                 return
             decoded_bytes = ser_bytes.decode('utf-8')
-            print(decoded_bytes)
+            # print(decoded_bytes)
 
             if "GNGGA" in decoded_bytes:
                 # print("decoded_bytes: ")
                 # print(decoded_bytes)
                 try:
-                    print(int(decoded_bytes.split(",")[7]))
+                    # print(int(decoded_bytes.split(",")[7]))
                     if int(decoded_bytes.split(",")[7]) < 3:
                         self.get_logger().info('Not enought sattelite: %s' % decoded_bytes.split(",")[7])
                         return
@@ -88,7 +88,7 @@ class GpsNode(Node):
                     gps_vel.data = "0.0"
                 else:
                     gps_vel.data = decoded_bytes.split(",")[7]
-                    print(decoded_bytes.split(",")[7])
+                    # print(decoded_bytes.split(",")[7])
                 self.string_publisher.publish(gps_vel)
                 break
 

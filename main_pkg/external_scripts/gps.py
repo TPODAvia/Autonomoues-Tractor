@@ -8,7 +8,7 @@ while True:
     decoded_bytes = ser_bytes.decode('utf-8')
     # print(decoded_bytes)
 
-    if "GPGGA" in decoded_bytes:
+    if "GNGGA" in decoded_bytes: #GPGGA
         # print(decoded_bytes)
         if int(decoded_bytes.split(",")[7]) > 1:
             print("Time: ", float(decoded_bytes.split(",")[1]))

@@ -13,6 +13,7 @@ shutdown = False
 app = Flask(__name__)
 cors = CORS(app)
 latest_gps_data = None 
+latest_gps_vel_data = None 
 latest_imu_data = None 
   
 class WebPublisherNode(Node):  
@@ -20,8 +21,14 @@ class WebPublisherNode(Node):
     def __init__(self):  
         super().__init__('web_publisher')  
         self.subscription_gps = self.create_subscription(NavSatFix, 'gps/filtered', self.gps_callback, 10)  
+        self.subscription_gps_vel = self.create_subscription(String, 'gps/velocity', self.gps_vel_callback, 10) 
         self.subscription_imu = self.create_subscription(Imu, 'imu', self.imu_callback, 10)  
-  
+
+    def gps_vel_callback(self,msg):
+        global_data = {'data_GPS_velocity':  msg.data}
+        global latest_gps_vel_data 
+        latest_gps_vel_data = global_data 
+
     def gps_callback(self, msg):  
         pos_cov = [str(i) for i in msg.position_covariance]  
         global_data = {  
@@ -48,36 +55,34 @@ class WebPublisherNode(Node):
             }  
         } 
         global latest_imu_data 
-        latest_imu_data = global_data  
-         
-  
- 
+        latest_imu_data = global_data 
+
 @app.route('/')  
 def get_latest_data():  
-    global latest_gps_data  
+    global latest_gps_data
+    global latest_gps_vel_data 
     global latest_imu_data
-    try:
-        if {**latest_gps_data, **latest_imu_data} is not None:  
-            return jsonify({**latest_gps_data, **latest_imu_data})  
-        else:  
-            return jsonify({'message': 'No data available'})
-    except:
-        return jsonify({'data_GPS': {
+
+    if latest_gps_data is None:
+        latest_gps_data = {'data_GPS': {
                 'latitude': -1,
                 'longitude': -1,
                 'altitude': -1,
-                'position_covariance': [-1,-1,-1,-1,-1,-1,-1,-1,-1]
-            },
-            'data_IMU': {
-                    'x': 0,
-                    'y': 0,
-                    'z': 0,
-                    'qx':0,
-                    'qy':0,
-                    'qz':0,
-                    'qw':0
-            }
-	})
+                'position_covariance': [-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            }}
+    if latest_imu_data is None: 
+        latest_imu_data = {'data_IMU': {
+                    'x': 0.0,
+                    'y': 0.0,
+                    'z': 0.0,
+                    'qx':0.0,
+                    'qy':0.0,
+                    'qz':0.0,
+                    'qw':0.0
+           }}
+    if latest_gps_vel_data is None:
+        latest_gps_vel_data ={'data_GPS_velocity': 0.0 }
+    return jsonify({**latest_gps_data, **latest_gps_vel_data, **latest_imu_data})
 
 
 def start_flask_server():  

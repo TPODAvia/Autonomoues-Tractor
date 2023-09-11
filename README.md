@@ -53,6 +53,7 @@ chmod +x ROS2-installation/ROS2_server.sh
 sudo ./ROS2-installation/ROS2_server.sh
 
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source ~/colcon_ws/install/setup.bash" >> ~/.bashrc
 ```
 #### Encrease swap file:
 
@@ -89,12 +90,18 @@ Start the watchdog service with the command `sudo systemctl start watchdog` and 
 
 Verify that the watchdog service is running with the command `sudo systemctl status watchdog`. If it's running correctly, you should see output indicating that the service is active.
 
-### Install ORB-SLAM3
+### Install SLAM and Navigation
 
 ```bash
 sudo apt-get update
-sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-v4l2-camera ros-humble-image-tools -y
-# sudo apt-get install libdc1394-dev
+sudo apt-get install ros-humble-v4l2-camera ros-humble-image-tools ros-humble-imu-tools ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-rviz2 -y
+```
+
+### Install ORB-SLAM3 (optional)
+
+```bash
+sudo apt-get update
+sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters -y
 
 cd
 git clone https://github.com/TPODAvia/ORB-SLAM3-STEREO-FIXED.git ORB_SLAM3
@@ -103,15 +110,26 @@ chmod +x build.sh
 ./build.sh
 https://github.com/astronaut71/orb_slam3_ros2
 
-```
-### Install OpenCV
-
-```bash
 # wget https://github.com/Qengineering/Install-OpenCV-Raspberry-Pi-32-bits/raw/main/OpenCV-4-5-5.sh
 cd ~/colcon_ws/src
 sudo chmod 755 /ROS2-installation/OpenCV-4-5-5.sh
 ./ROS2-installation/OpenCV-4-5-5.sh
+
+cd ~/colcon_ws/src
+
+git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
+cd /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/
+tar -xf ORBvoc.txt.tar.gz
+cd ~/colcon_ws
+
+rosdep install --from-paths src --ignore-src -r -y
+colcon build --symlink-install --packages-select orbslam3
+
 ```
+
+### Install remote desktop tools for debuging (Optional)
+
+https://pimylifeup.com/raspberry-pi-remote-desktop/
 
 ### Check I2C and USB port
 
@@ -127,8 +145,6 @@ sudo chmod 777 /dev/ttyUSB0
 
 ```bash
 cd ~/colcon_ws/src
-
-git clone https://github.com/TPODAvia/orb_slam3_ros2.git orbslam3_ros2
 
 git clone https://github.com/cra-ros-pkg/robot_localization.git
 cd robot_localization
@@ -151,9 +167,7 @@ cd full_coverage_path_planner
 git checkout ros2
 
 cd ~/colcon_ws
-echo "source ~/colcon_ws/install/setup.bash" >> ~/.bashrc
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --packages-select orbslam3
 colcon build
 ```
 
@@ -252,22 +266,21 @@ Again, please note that disabling the lock screen and suspend mode can pose a se
 
 ```bash
 ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
 cd ~/colcon_ws
 ros2 launch main_pkg 0camera.launch.py
+ros2 launch main_pkg 1kalman.launch.py
 ros2 launch main_pkg 3web_control.launch.py
 
-cd /home/ubuntu/colcon_ws/src/orbslam3_ros2/vocabulary/
-tar -xf ORBvoc.txt.tar.gz
-cd
+ros2 launch mpu9250driver mpu9250driver_launch.py
+ros2 launch robot_localization navsat_transform.launch.py
+ros2 launch robot_localization ekf.launch.py
 
+
+### Run ORB SLAM optional
 
 ros2 run image_tools cam2image -t camera -r image:=camera --ros-args --params-file /home/vboxuser/colcon_ws/src/params.yaml
 
 ros2 run orbslam3 mono /home/vboxuser/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/vboxuser/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
 
-ros2 launch main_pkg 1kalman.launch.py
-ros2 launch mpu6050driver mpu6050driver_launch.py
-
-ros2 launch robot_localization navsat_transform.launch.py
-ros2 launch robot_localization ekf.launch.py
 ```

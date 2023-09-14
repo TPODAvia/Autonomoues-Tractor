@@ -105,9 +105,12 @@ class MPU9250Node(Node):
 def main(args=None):
     rclpy.init(args=args)
     mpu9250_node = MPU9250Node()
-    rclpy.spin(mpu9250_node)
-    rclpy.shutdown()
-
+    try:
+        rclpy.spin(mpu9250_node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        mpu9250_node.destroy_node()
 
 if __name__ == '__main__':
     main()

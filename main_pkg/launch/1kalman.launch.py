@@ -54,7 +54,7 @@ def generate_launch_description():
             output='screen',
         ),
 
-        TimerAction(period=20.0, actions=[
+        TimerAction(period=24.0, actions=[
             Node(
                 package='robot_localization',
                 executable='navsat_transform_node',
@@ -64,7 +64,7 @@ def generate_launch_description():
             ),
         ]),
 
-        TimerAction(period=20.0, actions=[
+        TimerAction(period=22.0, actions=[
             Node(
                 package='robot_localization',
                 executable='ekf_node',
@@ -74,7 +74,7 @@ def generate_launch_description():
             ),
         ]),
 
-        TimerAction(period=20.0, actions=[
+        TimerAction(period=22.0, actions=[
             Node(
                 package='imu_filter_madgwick',
                 executable='imu_filter_madgwick_node',

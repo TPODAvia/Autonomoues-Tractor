@@ -38,9 +38,12 @@ class OdometryPublisher(Node):
 def main(args=None):
     rclpy.init(args=args)
     odometry_publisher = OdometryPublisher()
-    rclpy.spin(odometry_publisher)
-    odometry_publisher.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(odometry_publisher)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        odometry_publisher.destroy_node()
 
 if __name__ == '__main__':
     main()

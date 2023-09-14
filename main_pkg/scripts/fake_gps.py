@@ -46,13 +46,15 @@ def main(args=None):
 
     gps_node = GpsNode()
 
-    rclpy.spin(gps_node)
-
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    gps_node.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(gps_node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        gps_node.destroy_node()
 
 
 if __name__ == '__main__':

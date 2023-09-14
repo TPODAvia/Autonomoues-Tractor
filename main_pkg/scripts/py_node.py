@@ -81,12 +81,12 @@ def main(args=None):
     rclpy.init(args=args)
 
     cmd_vel_subscriber = CmdVelSubscriber()
-
-    rclpy.spin(cmd_vel_subscriber)
-
-    # Destroy the node explicitly
-    cmd_vel_subscriber.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(cmd_vel_subscriber)
+    except:
+        pass
+    finally:
+        cmd_vel_subscriber.destroy_node()
 
 if __name__ == '__main__':
     main()

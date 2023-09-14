@@ -31,10 +31,12 @@ def main(args=None):
 
     imu_subscriber = ImuSubscriber()
 
-    rclpy.spin(imu_subscriber)
-
-    imu_subscriber.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(imu_subscriber)
+    except:
+        pass
+    finally:
+        imu_subscriber.destroy_node()
 
 
 if __name__ == '__main__':

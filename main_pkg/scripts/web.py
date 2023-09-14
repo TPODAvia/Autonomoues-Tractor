@@ -8,8 +8,6 @@ import threading
 import time  
 from flask_cors import CORS, cross_origin
 from tf_transformations import euler_from_quaternion
-
-shutdown = False  
   
 app = Flask(__name__)
 cors = CORS(app)
@@ -28,7 +26,7 @@ class WebPublisherNode(Node):
     def gps_vel_callback(self,msg):
         global_data = {'data_GPS_velocity':  msg.data}
         global latest_gps_vel_data 
-        latest_gps_vel_data = global_data 
+        latest_gps_vel_data = float(global_data) 
 
     def gps_callback(self, msg):  
         pos_cov = [str(i) for i in msg.position_covariance]  
@@ -66,12 +64,12 @@ class WebPublisherNode(Node):
 
         global_data = {  
             'data_IMU': {  
-                    'x': msg.linear_acceleration.x,  
-                    'y': msg.linear_acceleration.y,  
-                    'z': msg.linear_acceleration.z, 
+                    'acc_x': msg.linear_acceleration.x,  
+                    'acc_y': msg.linear_acceleration.y,  
+                    'acc_z': msg.linear_acceleration.z, 
                     'roll':roll, 
                     'pitch':pitch, 
-                    'yaw':yaw, 
+                    'yaw':yaw
             }  
         } 
         global latest_imu_data 
@@ -92,13 +90,12 @@ def get_latest_data():
             }}
     if latest_imu_data is None: 
         latest_imu_data = {'data_IMU': {
-                    'x': 0.0,
-                    'y': 0.0,
-                    'z': 0.0,
-                    'qx':0.0,
-                    'qy':0.0,
-                    'qz':0.0,
-                    'qw':0.0
+                    'acc_x': 0.0,
+                    'acc_y': 0.0,
+                    'acc_z': 0.0,
+                    'roll':0.0,
+                    'pitch':0.0,
+                    'yaw':0.0,
            }}
     if latest_gps_vel_data is None:
         latest_gps_vel_data ={'data_GPS_velocity': 0.0 }
@@ -109,7 +106,6 @@ def start_flask_server():
     app.run(host='0.0.0.0', port=8000, threaded=True)  
 
 def main(args=None):  
-    global shutdown  
     rclpy.init(args=args)  
     node = WebPublisherNode()  
     server_thread = threading.Thread(target=start_flask_server)
@@ -118,11 +114,9 @@ def main(args=None):
     try:  
         rclpy.spin(node)  
     except KeyboardInterrupt:  
-        shutdown = True  
-        exit(0)  
+        pass
     finally:  
         node.destroy_node()  
-        rclpy.shutdown()  
-  
+
 if __name__ == '__main__':  
     main()

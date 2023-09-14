@@ -7,6 +7,7 @@ from flask import Flask, jsonify
 import threading  
 import time  
 from flask_cors import CORS, cross_origin
+from tf_transformations import euler_from_quaternion
 
 shutdown = False  
   
@@ -31,6 +32,17 @@ class WebPublisherNode(Node):
 
     def gps_callback(self, msg):  
         pos_cov = [str(i) for i in msg.position_covariance]  
+
+        # #cast from degrees, min, sec to decemial degrees
+        # latitude_degrees = int(msg.latitude)
+        # latitude_decimial_part = msg.latitude - latitude_degrees
+        # real_latitude = latitude_degrees + (latitude_decimial_part*100)/60
+
+        # #cast from degrees, min, sec to decemial degrees
+        # longitude_degrees = int(msg.longitude)
+        # longitude_decimial_part = msg.longitude - longitude_degrees
+        # real_longitude = longitude_degrees + (longitude_decimial_part*100)/60
+
         global_data = {  
             'data_GPS': {  
                 'latitude': msg.latitude,  
@@ -43,15 +55,23 @@ class WebPublisherNode(Node):
         latest_gps_data = global_data 
   
     def imu_callback(self, msg):  
+
+        # Extract quaternion
+        quaternion = (msg.orientation.x,
+                      msg.orientation.y,
+                      msg.orientation.z,
+                      msg.orientation.w)
+        # Convert quaternion to Euler angles
+        roll, pitch, yaw = euler_from_quaternion(quaternion)
+
         global_data = {  
             'data_IMU': {  
                     'x': msg.linear_acceleration.x,  
                     'y': msg.linear_acceleration.y,  
                     'z': msg.linear_acceleration.z, 
-                    'qx':msg.orientation.x, 
-                    'qy':msg.orientation.y, 
-                    'qz':msg.orientation.z, 
-                    'qw':msg.orientation.w 
+                    'roll':roll, 
+                    'pitch':pitch, 
+                    'yaw':yaw, 
             }  
         } 
         global latest_imu_data 

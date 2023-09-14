@@ -16,7 +16,7 @@ Now you can use ssh from your PC
 
 ```bash
 sudo apt-get install git python3-pip python3-schedule raspi-config wget curl -y
-pip install RPi.GPIO
+pip install RPi.GPIO flask_cors
 ```
 
 Then open the tool using
@@ -94,7 +94,7 @@ Verify that the watchdog service is running with the command `sudo systemctl sta
 
 ```bash
 sudo apt-get update
-sudo apt-get install ros-humble-v4l2-camera ros-humble-image-tools ros-humble-imu-tools ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-rviz2 -y
+sudo apt-get install ros-humble-v4l2-camera ros-humble-image-tools ros-humble-imu-tools ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-rviz2 ros-humble-tf-transformations -y
 ```
 
 ### Install ORB-SLAM3 (optional)

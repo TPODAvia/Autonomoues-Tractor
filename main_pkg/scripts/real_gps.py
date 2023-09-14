@@ -66,9 +66,19 @@ class GpsNode(Node):
                     # msg.altitude = -1.0
                 
                 else:
-                    msg.latitude = float(non_decimal.sub('',decoded_bytes.split(",")[2]))*0.01
-                    msg.longitude = float(non_decimal.sub('',decoded_bytes.split(",")[4]))*0.01
+                    latitude_degrees = float(non_decimal.sub('',decoded_bytes.split(",")[2]))*0.01
+                    latitude_degrees_int = int(latitude_degrees)
+                    latitude_decimial_part = latitude_degrees - latitude_degrees_int
+                    msg.latitude = latitude_degrees_int + (latitude_decimial_part*100)/60
+
+                    longitude_degrees = float(non_decimal.sub('',decoded_bytes.split(",")[4]))*0.01
+                    longitude_degrees_int = int(longitude_degrees)
+                    longitude_decimial_part = longitude_degrees - longitude_degrees_int
+                    msg.longitude = longitude_degrees_int + (longitude_decimial_part*100)/60
+
                     msg.altitude = float(non_decimal.sub('',decoded_bytes.split(",")[9]))
+
+
 
                 msg.position_covariance[0] = 0
                 msg.position_covariance[4] = 0

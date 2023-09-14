@@ -37,6 +37,8 @@ install(PROGRAMS
   scripts/real_gps.py
   scripts/web.py
   scripts/odom.py
+  scripts/quat.py
+  scripts/mpu9250_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

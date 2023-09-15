@@ -87,7 +87,7 @@ def main(args=None):
     cmd_vel_subscriber = CmdVelSubscriber()
     try:
         rclpy.spin(cmd_vel_subscriber)
-    except:
+    except KeyboardInterrupt:
         pass
     finally:
         cmd_vel_subscriber.destroy_node()

@@ -25,20 +25,20 @@ def generate_launch_description():
             name='mpu9250',     
         ),
 
-        Node(
-            package='main_pkg',
-            executable='real_gps.py',
-            name='real_gps',
-            output='screen',
-            parameters=["/dev/ttyUSB0"],
-        ),
-
         # Node(
-        #    package='main_pkg',
-        #    executable='fake_gps.py',
-        #    name='fake_gps',
-        #    output='screen',
+        #     package='main_pkg',
+        #     executable='real_gps.py',
+        #     name='real_gps',
+        #     output='screen',
+        #     parameters=["/dev/ttyUSB0"],
         # ),
+
+        Node(
+           package='main_pkg',
+           executable='fake_gps.py',
+           name='fake_gps',
+           output='screen',
+        ),
 
         Node(
             package='main_pkg',
@@ -49,8 +49,8 @@ def generate_launch_description():
 
         Node(
             package='main_pkg',
-            executable='odom.py',
-            name='odom_node',
+            executable='fake_odom.py',
+            name='fake_odom_node',
             output='screen',
         ),
 
@@ -84,4 +84,12 @@ def generate_launch_description():
                 remappings=[('imu/data', 'imu')] 
             ),
         ]),
+        
+        # Node(
+        #     package='rviz2',
+        #     namespace='',
+        #     executable='rviz2',
+        #     name='rviz2',
+        #     arguments=['-d' + os.path.join(get_package_share_directory('main_pkg'), 'config', 'config_file.rviz')]
+        # )
     ])

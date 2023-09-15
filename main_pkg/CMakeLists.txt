@@ -36,8 +36,9 @@ install(PROGRAMS
   scripts/fake_gps.py
   scripts/real_gps.py
   scripts/web.py
-  scripts/odom.py
-  scripts/quat.py
+  scripts/fake_odom.py
+  scripts/imu_quat.py
+  scripts/odom_quat.py
   scripts/mpu9250_node.py
   DESTINATION lib/${PROJECT_NAME}
 )

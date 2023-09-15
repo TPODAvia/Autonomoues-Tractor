@@ -4,13 +4,20 @@ import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Header
+from sensor_msgs.msg import Imu
 
 class OdometryPublisher(Node):
     def __init__(self):
         super().__init__('odometry_publisher')
         self.publisher_ = self.create_publisher(Odometry, 'odometry/global', 10)
-        self.timer_ = self.create_timer(1.0, self.publish_odometry)
+        self.subscriber_ = self.create_subscription(Imu, '/imu', self.imu_callback, 10)
+        self.timer_ = self.create_timer(0.1, self.publish_odometry)
+        self.imu_data = None  # Initialize imu_data
         self.get_logger().info('Odometry publisher node initialized')
+
+
+    def imu_callback(self, msg):
+        self.imu_data = msg
 
     def publish_odometry(self):
         odometry_msg = Odometry()
@@ -21,16 +28,14 @@ class OdometryPublisher(Node):
         odometry_msg.pose.pose.position.x = 0.0
         odometry_msg.pose.pose.position.y = 0.0
         odometry_msg.pose.pose.position.z = 0.0
-        odometry_msg.pose.pose.orientation.w = 1.0
-        odometry_msg.pose.pose.orientation.x = 0.0
-        odometry_msg.pose.pose.orientation.y = 0.0
-        odometry_msg.pose.pose.orientation.z = 0.0
+        if self.imu_data is not None:
+            odometry_msg.pose.pose.orientation = self.imu_data.orientation
         odometry_msg.twist.twist.linear.x = 0.0
         odometry_msg.twist.twist.linear.y = 0.0
         odometry_msg.twist.twist.linear.z = 0.0
-        odometry_msg.twist.twist.angular.x = 0.0
-        odometry_msg.twist.twist.angular.y = 0.0
-        odometry_msg.twist.twist.angular.z = 0.0
+        # odometry_msg.twist.twist.angular.x = 0.0
+        # odometry_msg.twist.twist.angular.y = 0.0
+        # odometry_msg.twist.twist.angular.z = 0.0
 
         self.publisher_.publish(odometry_msg)
         # self.get_logger().info('Odometry message published')

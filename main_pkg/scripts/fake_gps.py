@@ -2,6 +2,7 @@
 import rclpy
 import os
 from rclpy.node import Node
+import random
 
 from sensor_msgs.msg import NavSatFix
 from sensor_msgs.msg import NavSatStatus
@@ -26,11 +27,11 @@ class GpsNode(Node):
             msg.status.service = NavSatStatus.SERVICE_GPS
 
             # Position in degrees.
-            msg.latitude = 57.047218
-            msg.longitude = 9.920100
+            msg.latitude = 57.047218 + random.uniform(-0.0001, 0.0001)
+            msg.longitude = 9.920100 + random.uniform(-0.0001, 0.0001)
 
             # Altitude in metres.
-            msg.altitude = 1.15
+            msg.altitude = 1.15 + random.uniform(-0.0001, 0.0001)
 
             msg.position_covariance[0] = 0
             msg.position_covariance[4] = 0
@@ -46,9 +47,6 @@ def main(args=None):
 
     gps_node = GpsNode()
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     try:
         rclpy.spin(gps_node)
     except KeyboardInterrupt:

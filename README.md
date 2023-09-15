@@ -16,7 +16,7 @@ Now you can use ssh from your PC
 
 ```bash
 sudo apt-get install git python3-pip python3-schedule raspi-config wget curl -y
-pip install RPi.GPIO flask_cors
+pip install RPi.GPIO flask_cors transforms3d smbus2 mpu9250-jmdev
 ```
 
 Then open the tool using
@@ -101,7 +101,7 @@ sudo apt-get install ros-humble-v4l2-camera ros-humble-image-tools ros-humble-im
 
 ```bash
 sudo apt-get update
-sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters -y
+sudo apt-get install libboost-all-dev libboost-dev libssl-dev libpython2.7-dev libeigen3-dev libunwind-dev python3-rosdep2 ros-humble-vision-opencv ros-humble-message-filters ros-humble-imu-tools -y
 
 cd
 git clone https://github.com/TPODAvia/ORB-SLAM3-STEREO-FIXED.git ORB_SLAM3

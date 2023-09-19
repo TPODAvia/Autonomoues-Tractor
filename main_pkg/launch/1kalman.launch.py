@@ -30,7 +30,7 @@ def generate_launch_description():
             executable='real_gps.py',
             name='real_gps',
             output='screen',
-            parameters=["/dev/ttyACM0"],
+            parameters=[{'serial_port': '/dev/ttyACM0'}],
         ),
 
         # Node(

@@ -60,6 +60,7 @@ class GpsNode(Node):
                 if decoded_bytes.split(",")[2] == '':
 
                     print("no gps data")
+                    time.sleep(1)
                     return
                     # msg.latitude = -1.0
                     # msg.longitude = -1.0

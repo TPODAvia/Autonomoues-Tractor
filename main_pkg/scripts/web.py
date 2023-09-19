@@ -29,7 +29,7 @@ class WebPublisherNode(Node):
         latest_gps_vel_data = float(global_data) 
 
     def gps_callback(self, msg):  
-        pos_cov = [str(i) for i in msg.position_covariance]  
+        pos_cov = [float(i) for i in msg.position_covariance]  
 
         # #cast from degrees, min, sec to decemial degrees
         # latitude_degrees = int(msg.latitude)

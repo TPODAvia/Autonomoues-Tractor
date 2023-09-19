@@ -168,7 +168,8 @@ git checkout ros2
 
 cd ~/colcon_ws
 rosdep install --from-paths src --ignore-src -r -y
-colcon build
+colcon build --symlink-install
+# remember to chmox +x all pythons file
 ```
 
 ### Always On mode

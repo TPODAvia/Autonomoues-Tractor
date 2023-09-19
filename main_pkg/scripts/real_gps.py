@@ -36,7 +36,7 @@ class GpsNode(Node):
             decoded_bytes = ser_bytes.decode('utf-8')
             # print(decoded_bytes)
 
-            if "GNGGA" in decoded_bytes:
+            if "GPGGA" in decoded_bytes:
                 # print("decoded_bytes: ")
                 # print(decoded_bytes)
                 try:

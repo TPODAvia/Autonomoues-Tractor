@@ -7,9 +7,11 @@
 
 import smbus
 import time
+import math
 
 # Get I2C bus
 bus = smbus.SMBus(1)
+prev_alt = 0
 while True:
     # BMP280 address, 0x76(118)
     # Read data back from 0x88(136), 24 bytes
@@ -62,7 +64,7 @@ while True:
     #		0xA0(00)	Stand_by time = 1000 ms
     bus.write_byte_data(0x76, 0xF5, 0xA0)
 
-    time.sleep(0.5)
+    time.sleep(1)
 
     # BMP280 address, 0x76(118)
     # Read data back from 0xF7(247), 8 bytes
@@ -93,8 +95,12 @@ while True:
     var1 = (dig_P9) * p * p / 2147483648.0
     var2 = p * (dig_P8) / 32768.0
     pressure = (p + (var1 + var2 + (dig_P7)) / 16.0) / 100
-
+    altitude = 44330*(1 - math.pow((pressure/1013.25),(1/5.255)))
     # Output data to screen
-    print("Temperature in Celsius : %.2f C" %cTemp)
-    print("Temperature in Fahrenheit : %.2f F" %fTemp)
-    print("Pressure : %.2f hPa " %pressure)
+    # print("Temperature in Celsius : %.2f C" %cTemp)
+    # print("Temperature in Fahrenheit : %.2f F" %fTemp)
+    # print("Pressure : %.9f hPa " %pressure)
+    print("Altitude : %.9f m " %altitude)
+    print("Delta    : %.9f m " %(altitude-prev_alt))
+
+    prev_alt = altitude

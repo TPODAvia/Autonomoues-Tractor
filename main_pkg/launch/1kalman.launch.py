@@ -25,20 +25,20 @@ def generate_launch_description():
             name='mpu9250',     
         ),
 
-        # Node(
-        #     package='main_pkg',
-        #     executable='real_gps.py',
-        #     name='real_gps',
-        #     output='screen',
-        #     parameters=["/dev/ttyUSB0"],
-        # ),
-
         Node(
-           package='main_pkg',
-           executable='fake_gps.py',
-           name='fake_gps',
-           output='screen',
+            package='main_pkg',
+            executable='real_gps.py',
+            name='real_gps',
+            output='screen',
+            parameters=["/dev/ttyACM0"],
         ),
+
+        # Node(
+        #    package='main_pkg',
+        #    executable='fake_gps.py',
+        #    name='fake_gps',
+        #    output='screen',
+        # ),
 
         Node(
             package='main_pkg',

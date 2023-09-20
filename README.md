@@ -287,3 +287,41 @@ ros2 run image_tools cam2image -t camera -r image:=camera --ros-args --params-fi
 ros2 run orbslam3 mono /home/vboxuser/colcon_ws/src/orbslam3_ros2/vocabulary/ORBvoc.txt /home/vboxuser/colcon_ws/src/orbslam3_ros2/config/monocular/TUM1.yaml
 
 ```
+
+### Running rosbag2
+
+To use `ros2bag` in ROS2 Humble, you can follow these steps:
+
+1. Install `ros2bag`: First, make sure you have ROS2 installed on your system. Then, you can install `ros2bag` by running the following command in the terminal:
+```
+sudo apt-get install ros-humble-ros2bag && ros-humble-rosbag2-storage-default-plugins
+```
+
+2. Record a topic: To record a specific topic into a bag file, you can use the `ros2 bag record` command followed by the name of the topic. For example, to record the `/chatter` topic, you can run the following command:
+```
+ros2 bag record /chatter
+```
+This will create a SQLite3 database file with the recorded messages.
+
+3. Override QoS policies: If you want to override the Quality of Service (QoS) policies for recording and playback, you can use the YAML schema for profile overrides. The overrides are specified as a dictionary of topic names with key/value pairs for each QoS policy. Here's an example of the YAML schema:
+```yaml
+topic_name:
+  qos_policy_name: str
+  ...
+  qos_duration:
+    sec: int
+    nsec: int
+```
+You can specify different QoS policies such as `history`, `depth`, `reliability`, `durability`, `deadline`, `lifespan`, `liveliness`, `liveliness_lease_duration`, and `avoid_ros_namespace_conventions`. Refer to the [official documentation](https://docs.ros.org/en/humble/How-To-Guides/Overriding-QoS-Policies-For-Recording-And-Playback.html) for more details on each policy and its values.
+
+4. Split bag files: If you want to split a bag file into multiple files with a specified duration, you can use the `ros2 bag slice` command. For example, to split an `input_bag` into sliced bags with a duration of 60 seconds, you can run the following command:
+```
+ros2 bag slice input_bag -o sliced_bags -d 60
+```
+This will create multiple sliced bag files with the specified duration.
+
+These steps should help you use `ros2bag` in ROS2 Humble. For more details and advanced usage, you can refer to the official ROS2 documentation and the `ros2bag` package documentation:
+
+- [ROS2 Humble Documentation](https://docs.ros.org/en/humble/index.html)
+- [ROS2Bag Documentation](https://docs.ros.org/en/ros2_packages/humble/api/ros2bag/ros2bag.api.html)
+- [ROS2Bag Extensions](https://github.com/tier4/ros2bag_extensions) (Additional features and functionalities for `ros2bag`)

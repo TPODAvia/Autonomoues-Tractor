@@ -99,6 +99,15 @@ sudo apt-get update
 sudo apt-get install ros-humble-v4l2-camera ros-humble-image-tools ros-humble-imu-tools ros-humble-rtabmap-ros ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-rviz2 ros-humble-tf-transformations -y
 ```
 
+### Install DepthAI for depth camera
+
+```bash
+echo 'SUBSYSTEM=="usb", ATTRS{idVendor}=="03e7", MODE="0666"' | sudo tee /etc/udev/rules.d/80-movidius.rules
+sudo udevadm control --reload-rules && sudo udevadm trigger
+
+sudo apt install ros-humble-depthai-ros
+```
+
 ### Install ORB-SLAM3 (optional)
 
 ```bash

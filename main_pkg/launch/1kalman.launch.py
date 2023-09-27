@@ -25,20 +25,20 @@ def generate_launch_description():
             name='mpu9250',     
         ),
 
-        Node(
-            package='main_pkg',
-            executable='real_gps.py',
-            name='real_gps',
-            output='screen',
-            parameters=[{'serial_port': '/dev/ttyACM0'}],
-        ),
-
         # Node(
-        #    package='main_pkg',
-        #    executable='fake_gps.py',
-        #    name='fake_gps',
-        #    output='screen',
+        #     package='main_pkg',
+        #     executable='real_gps.py',
+        #     name='real_gps',
+        #     output='screen',
+        #     parameters=[{'serial_port': '/dev/ttyACM0'}],
         # ),
+
+        Node(
+           package='main_pkg',
+           executable='fake_gps.py',
+           name='fake_gps',
+           output='screen',
+        ),
 
         Node(
             package='main_pkg',
@@ -47,12 +47,12 @@ def generate_launch_description():
             output='screen',
         ),
 
-        Node(
-            package='main_pkg',
-            executable='fake_odom.py',
-            name='fake_odom_node',
-            output='screen',
-        ),
+        # Node(
+        #     package='main_pkg',
+        #     executable='fake_odom.py',
+        #     name='fake_odom_node',
+        #     output='screen',
+        # ),
 
         TimerAction(period=24.0, actions=[
             Node(

@@ -16,6 +16,7 @@ class GpsNode(Node):
         self.publisher_ = self.create_publisher(NavSatFix, 'gps/fix', 10)
         timer_period = 0.5  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.shift = 0.0
 
     def timer_callback(self):
             msg = NavSatFix()
@@ -27,15 +28,16 @@ class GpsNode(Node):
             msg.status.service = NavSatStatus.SERVICE_GPS
 
             # Position in degrees.
-            msg.latitude = 57.047218 + random.uniform(-0.0001, 0.0001)
-            msg.longitude = 9.920100 + random.uniform(-0.0001, 0.0001)
+            msg.latitude = 55.6646 + random.uniform(-0.0001, 0.0001) + self.shift
+            # self.shift = self.shift + 0.000001
+            msg.longitude = 37.9279 + random.uniform(-0.0001, 0.0001)
 
             # Altitude in metres.
             msg.altitude = 1.15 + random.uniform(-0.0001, 0.0001)
 
-            msg.position_covariance[0] = 0
-            msg.position_covariance[4] = 0
-            msg.position_covariance[8] = 0
+            msg.position_covariance[0] = 1.44
+            msg.position_covariance[4] = 1.44
+            msg.position_covariance[8] = 5.76
             msg.position_covariance_type = NavSatFix.COVARIANCE_TYPE_DIAGONAL_KNOWN
 
             self.publisher_.publish(msg)

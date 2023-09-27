@@ -95,7 +95,7 @@ def generate_launch_description():
     depthai_prefix = get_package_share_directory("main_pkg")
     declared_arguments = [
         DeclareLaunchArgument("name", default_value="oak"),
-        DeclareLaunchArgument("params_file", default_value=os.path.join(depthai_prefix, 'config', 'rgbd.yaml')),
+        DeclareLaunchArgument("params_file", default_value=os.path.join(depthai_prefix, 'launch', 'rgbd.yaml')),
         DeclareLaunchArgument("rectify_rgb", default_value="True"),
     ]
 

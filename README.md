@@ -41,7 +41,7 @@ supported=1 detected=1, libcamera interfaces=0
 vcgencmd get_camera
 supported=0 detected=0
 # If IP is blocked
-sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPTPT
+sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
 ```
 
 ```bash

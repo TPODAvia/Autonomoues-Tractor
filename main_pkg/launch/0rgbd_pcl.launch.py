@@ -20,7 +20,7 @@ def launch_setup(context, *args, **kwargs):
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
     
     params_file = LaunchConfiguration("params_file")
-    camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
+    camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D-LITE')
 
     name = LaunchConfiguration('name').perform(context)
 
@@ -121,7 +121,7 @@ def generate_launch_description():
     declared_arguments = [
         DeclareLaunchArgument("name", default_value="oak"),
         DeclareLaunchArgument("parent_frame", default_value="oak-d-base-frame"),
-        DeclareLaunchArgument("camera_model", default_value="OAK-D"),
+        DeclareLaunchArgument("camera_model", default_value="OAK-D-LITE"),
         DeclareLaunchArgument("cam_pos_x", default_value="0.0"),
         DeclareLaunchArgument("cam_pos_y", default_value="0.0"),
         DeclareLaunchArgument("cam_pos_z", default_value="0.0"),
@@ -140,6 +140,13 @@ def generate_launch_description():
         DeclareLaunchArgument("use_perf", default_value='false')
     ]
 
+    web_video_server_node = Node(
+            package='web_video_server',
+            executable='web_video_server',
+            name='web_video_server',
+            output='screen',
+        )
+    
     return LaunchDescription(
-        declared_arguments + [OpaqueFunction(function=launch_setup)]
+        declared_arguments + [OpaqueFunction(function=launch_setup), web_video_server_node]
     )

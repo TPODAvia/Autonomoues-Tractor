@@ -40,6 +40,8 @@ install(PROGRAMS
   scripts/imu_quat.py
   scripts/odom_quat.py
   scripts/mpu9250_node.py
+  scripts/fake_map.py
+  scripts/fake_scan.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

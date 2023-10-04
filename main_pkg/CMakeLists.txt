@@ -42,6 +42,7 @@ install(PROGRAMS
   scripts/mpu9250_node.py
   scripts/fake_map.py
   scripts/fake_scan.py
+  scripts/transform.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

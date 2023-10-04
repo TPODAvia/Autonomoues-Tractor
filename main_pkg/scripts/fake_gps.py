@@ -28,9 +28,9 @@ class GpsNode(Node):
             msg.status.service = NavSatStatus.SERVICE_GPS
 
             # Position in degrees.
-            msg.latitude = 55.6646 + random.uniform(-0.0001, 0.0001) + self.shift
+            msg.latitude = 55.6646 + random.uniform(-0.000001, 0.000001) + self.shift
             # self.shift = self.shift + 0.000001
-            msg.longitude = 37.9279 + random.uniform(-0.0001, 0.0001)
+            msg.longitude = 37.9279 + random.uniform(-0.000001, 0.000001)
 
             # Altitude in metres.
             msg.altitude = 1.15 + random.uniform(-0.0001, 0.0001)

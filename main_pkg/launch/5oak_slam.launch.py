@@ -122,6 +122,36 @@ def generate_launch_description():
     
     # ])
 
+    parameters={
+          'frame_id':'base_footprint',
+          'use_sim_time':use_sim_time,
+          'subscribe_rgbd':True,
+          'subscribe_scan':True,
+          'use_action_for_goal':True,
+          'qos_scan':qos,
+          'qos_image':qos,
+          'qos_imu':qos,
+          # RTAB-Map's parameters should be strings:
+          'Reg/Strategy':'1',
+          'Reg/Force3DoF':'true',
+          'RGBD/NeighborLinkRefining':'True',
+          'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
+          'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
+    }
+
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    qos = LaunchConfiguration('qos')
+    
+    remappings=[
+          ('rgb/image', '/camera/image_raw'),
+          ('rgb/camera_info', '/camera/camera_info'),
+          ('depth/image', '/camera/depth/image_raw')]
+
+    Node(
+        package='rtabmap_sync', executable='rgbd_sync', output='screen',
+        parameters=[{'approx_sync':False, 'use_sim_time':use_sim_time, 'qos':qos}],
+        remappings=remappings),
+    
     # static_tf_node = Node(
     #     package='tf2_ros',
     #     executable='static_transform_publisher',

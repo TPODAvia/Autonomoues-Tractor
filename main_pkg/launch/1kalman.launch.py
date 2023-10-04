@@ -84,12 +84,24 @@ def generate_launch_description():
                 remappings=[('imu/data', 'imu')] 
             ),
         ]),
-        
-        # Node(
-        #     package='rviz2',
-        #     namespace='',
-        #     executable='rviz2',
-        #     name='rviz2',
-        #     arguments=['-d' + os.path.join(get_package_share_directory('main_pkg'), 'config', 'config_file.rviz')]
-        # )
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=['0.5', '0.5', '0', '0', '0', '0', 'map', 'odom']
+        ),
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=['0', '0', '0', '0', '0', '0', 'base_footprint', 'base_link']
+        ),
+
+        Node(
+            package='main_pkg',
+            executable='fake_scan.py',
+            name='fake_scan',
+            output='screen',
+        ),
+
     ])

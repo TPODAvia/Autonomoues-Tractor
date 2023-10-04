@@ -8,7 +8,7 @@ class FakeScanNode(Node):
     def __init__(self):
         super().__init__('fake_scan_node')
         self.scan_publisher = self.create_publisher(LaserScan, '/scan', 10)
-        self.timer = self.create_timer(1.0, self.publish_scan)
+        self.timer = self.create_timer(0.2, self.publish_scan)
 
     def publish_scan(self):
         scan = LaserScan()
@@ -21,7 +21,7 @@ class FakeScanNode(Node):
         scan.scan_time = 0.1
         scan.range_min = 0.0
         scan.range_max = 10.0
-        scan.ranges = [1.0] * int((scan.angle_max - scan.angle_min) / scan.angle_increment)
+        scan.ranges = [9.0] * int((scan.angle_max - scan.angle_min) / scan.angle_increment)
         self.scan_publisher.publish(scan)
 
 

@@ -1,24 +1,26 @@
-# ros2 launch mpu6050driver mpu6050driver_launch.py
-# ros2 run gpsx gps_node
-
 import os
 from launch.actions import TimerAction
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-# import launch_ros.actions
-# import yaml
-# from launch.substitutions import EnvironmentVariable
-# import pathlib
-# import launch.actions
-# from launch.actions import DeclareLaunchArgument
-# from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
      
     config_dir = os.path.join(get_package_share_directory('main_pkg'), 'launch')
 
+    use_real_gps = LaunchConfiguration('use_real_gps')
+
+    declare_use_rviz_cmd = DeclareLaunchArgument(
+        'use_real_gps',
+        default_value='True',
+        description='To run real gps hardware turn this to true')
+    
     return LaunchDescription([
+        declare_use_rviz_cmd,
+
         Node(
             package='main_pkg',
             executable='mpu9250_node.py',
@@ -26,6 +28,7 @@ def generate_launch_description():
         ),
 
         Node(
+            condition=IfCondition(use_real_gps),
             package='main_pkg',
             executable='real_gps.py',
             name='real_gps',
@@ -33,12 +36,13 @@ def generate_launch_description():
             parameters=[{'serial_port': '/dev/ttyACM0'}],
         ),
 
-        # Node(
-        #    package='main_pkg',
-        #    executable='fake_gps.py',
-        #    name='fake_gps',
-        #    output='screen',
-        # ),
+        Node(
+            condition=IfCondition(PythonExpression(['not ', use_real_gps])),
+            package='main_pkg',
+            executable='fake_gps.py',
+            name='fake_gps',
+            output='screen',
+        ),
 
         Node(
             package='main_pkg',
@@ -46,13 +50,6 @@ def generate_launch_description():
             name='web_node',
             output='screen',
         ),
-
-        # Node(
-        #     package='main_pkg',
-        #     executable='fake_odom.py',
-        #     name='fake_odom_node',
-        #     output='screen',
-        # ),
 
         TimerAction(period=24.0, actions=[
             Node(

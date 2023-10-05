@@ -30,6 +30,7 @@ def generate_launch_description():
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
+    use_rviz = LaunchConfiguration('use_rviz')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -56,6 +57,11 @@ def generate_launch_description():
     stdout_linebuf_envvar = SetEnvironmentVariable(
         'RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
+    declare_use_rviz_cmd = DeclareLaunchArgument(
+        'use_rviz',
+        default_value='True',
+        description='Whether to start RVIZ')
+    
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
         default_value='',
@@ -73,7 +79,9 @@ def generate_launch_description():
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
-        description='Full path to map yaml file to load')
+        default_value=os.path.join(
+            bringup_dir, 'maps', 'turtlebot3_world.yaml'),
+        description='Full path to map file to load')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
@@ -107,6 +115,12 @@ def generate_launch_description():
             condition=IfCondition(use_namespace),
             namespace=namespace),
 
+        Node(
+            package='main_pkg',
+            executable='control_node.py',
+            name='control_node'
+        ),
+        
         Node(
             condition=IfCondition(use_composition),
             name='nav2_container',
@@ -149,6 +163,12 @@ def generate_launch_description():
                               'use_composition': use_composition,
                               'use_respawn': use_respawn,
                               'container_name': 'nav2_container'}.items()),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
+            condition=IfCondition(PythonExpression([use_rviz]))
+        )
     ])
 
     # Create the launch description and populate
@@ -156,7 +176,7 @@ def generate_launch_description():
 
     # Set environment variables
     ld.add_action(stdout_linebuf_envvar)
-
+    ld.add_action(declare_use_rviz_cmd)
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_namespace_cmd)
@@ -171,5 +191,8 @@ def generate_launch_description():
 
     # Add the actions to launch all of the navigation nodes
     ld.add_action(bringup_cmd_group)
+
+    # Visualization
+
 
     return ld

@@ -1,8 +1,4 @@
 import os
-# Do rectification
-# Do image syncronisation
-
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, OpaqueFunction
@@ -26,39 +22,23 @@ def launch_setup(context, *args, **kwargs):
             "subscribe_odom_info": True,
             "approx_sync": True,
             "Rtabmap/DetectionRate": "3.5",
+            "subscribe_rgbd": True
         }
     ]
 
     remappings = [
-        ("rgb/image", name+"/rgb/image_raw"),
-        ("rgb/camera_info", name+"/rgb/camera_info"),
-        ("depth/image", name+"/stereo/image_raw"),
+        # ("rgb/image", name+"/rgb/image_raw"),
+        # ("rgb/camera_info", name+"/rgb/camera_info"),
+        # ("depth/image", name+"/stereo/image_raw"),
     ]
 
     return [
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(depthai_prefix, 'launch', 'camera.launch.py')),
+                os.path.join(get_package_share_directory("main_pkg"), 'launch', '0rgbd_pcl.launch.py')),
             launch_arguments={"name": name,
                               "params_file": params_file}.items()),
-
-        # LoadComposableNodes(
-        #     condition=IfCondition(LaunchConfiguration("rectify_rgb")),
-        #     target_container=name+"_container",
-        #     composable_node_descriptions=[
-        #         ComposableNode(
-        #             package="image_proc",
-        #             plugin="image_proc::RectifyNode",
-        #             name="rectify_color_node",
-        #             remappings=[('image', name+'/rgb/image_raw'),
-        #                         ('camera_info', name+'/rgb/camera_info'),
-        #                         ('image_rect', name+'/rgb/image_rect'),
-        #                         ('image_rect/compressed', name+'/rgb/image_rect/compressed'),
-        #                         ('image_rect/compressedDepth', name+'/rgb/image_rect/compressedDepth'),
-        #                         ('image_rect/theora', name+'/rgb/image_rect/theora')]
-        #         )
-        #     ]),
-        
+ 
         LoadComposableNodes(
             target_container=name+"_container",
             composable_node_descriptions=[
@@ -72,18 +52,18 @@ def launch_setup(context, *args, **kwargs):
             ],
         ),
 
-        # LoadComposableNodes(
-        #     target_container=name+"_container",
-        #     composable_node_descriptions=[
-        #         ComposableNode(
-        #             package='rtabmap_slam',
-        #             plugin='rtabmap_slam::CoreWrapper',
-        #             name='rtabmap',
-        #             parameters=parameters,
-        #             remappings=remappings,
-        #         ),
-        #     ],
-        # ),
+        LoadComposableNodes(
+            target_container=name+"_container",
+            composable_node_descriptions=[
+                ComposableNode(
+                    package='rtabmap_slam',
+                    plugin='rtabmap_slam::CoreWrapper',
+                    name='rtabmap',
+                    parameters=parameters,
+                    remappings=remappings,
+                ),
+            ],
+        ),
 
         # Node(
         #     package="rtabmap_viz",
@@ -121,42 +101,7 @@ def generate_launch_description():
     #     ),
     
     # ])
-
-    parameters={
-          'frame_id':'base_footprint',
-          'use_sim_time':use_sim_time,
-          'subscribe_rgbd':True,
-          'subscribe_scan':True,
-          'use_action_for_goal':True,
-          'qos_scan':qos,
-          'qos_image':qos,
-          'qos_imu':qos,
-          # RTAB-Map's parameters should be strings:
-          'Reg/Strategy':'1',
-          'Reg/Force3DoF':'true',
-          'RGBD/NeighborLinkRefining':'True',
-          'Grid/RangeMin':'0.2', # ignore laser scan points on the robot itself
-          'Optimizer/GravitySigma':'0' # Disable imu constraints (we are already in 2D)
-    }
-
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    qos = LaunchConfiguration('qos')
     
-    remappings=[
-          ('rgb/image', '/camera/image_raw'),
-          ('rgb/camera_info', '/camera/camera_info'),
-          ('depth/image', '/camera/depth/image_raw')]
-
-    Node(
-        package='rtabmap_sync', executable='rgbd_sync', output='screen',
-        parameters=[{'approx_sync':False, 'use_sim_time':use_sim_time, 'qos':qos}],
-        remappings=remappings),
-    
-    # static_tf_node = Node(
-    #     package='tf2_ros',
-    #     executable='static_transform_publisher',
-    #     arguments=['0', '0', '1', '0', '0', '0', 'base_link', 'oak']
-    # )
 
     return LaunchDescription(
         # declared_arguments + [OpaqueFunction(function=launch_setup), imu_node, madwick_node, static_tf_node]

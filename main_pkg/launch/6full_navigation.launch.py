@@ -82,7 +82,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(bringup_dir, 'params', 'nav2_params.yaml'),
+        default_value=os.path.join(get_package_share_directory('main_pkg'), 'launch', 'nav2_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -118,17 +118,18 @@ def generate_launch_description():
             output='screen'),
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'slam_launch.py')),
-            condition=IfCondition(slam),
-            launch_arguments={'namespace': namespace,
-                              'use_sim_time': use_sim_time,
-                              'autostart': autostart,
-                              'use_respawn': use_respawn,
-                              'params_file': params_file}.items()),
+            PythonLaunchDescriptionSource(os.path.join(
+                                            os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
+                                            ),
+            condition=IfCondition(slam),),
 
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir,
-                                                       'localization_launch.py')),
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('main_pkg'), "launch", '1kalman.launch.py')),
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'localization_launch.py')),
             condition=IfCondition(PythonExpression(['not ', slam])),
             launch_arguments={'namespace': namespace,
                               'map': map_yaml_file,

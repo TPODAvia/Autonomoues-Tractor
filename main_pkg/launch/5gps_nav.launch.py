@@ -13,11 +13,9 @@ from nav2_common.launch import RewrittenYaml
 def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('nav2_bringup')
-    gps_wpf_dir = get_package_share_directory(
-        "main_pkg")
-    launch_dir = os.path.join(gps_wpf_dir, 'launch')
+    gps_wpf_dir = get_package_share_directory("main_pkg")
     params_dir = os.path.join(gps_wpf_dir, "launch")
-    nav2_params = os.path.join(params_dir, "nav2_params.yaml")
+    nav2_params = os.path.join(params_dir, "nav2_gps.yaml")
     configured_params = RewrittenYaml(
         source_file=nav2_params, root_key="", param_rewrites="", convert_types=True
     )
@@ -26,7 +24,7 @@ def generate_launch_description():
 
     declare_use_rviz_cmd = DeclareLaunchArgument(
         'use_rviz',
-        default_value='True',
+        default_value='False',
         description='Whether to start RVIZ')
 
     navigation2_cmd = IncludeLaunchDescription(
@@ -40,6 +38,11 @@ def generate_launch_description():
         }.items(),
     )
 
+    kalman_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(gps_wpf_dir, "launch", '1kalman.launch.py')),
+    )
+
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
@@ -48,8 +51,8 @@ def generate_launch_description():
     # Create the launch description and populate
     ld = LaunchDescription()
 
-    # simulator launch
-
+    # kalman launch
+    ld.add_action(kalman_cmd)
 
     # navigation2 launch
     ld.add_action(navigation2_cmd)

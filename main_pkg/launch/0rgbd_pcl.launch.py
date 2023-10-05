@@ -6,7 +6,7 @@ from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, Opaq
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
-from launch_ros.actions import ComposableNodeContainer, Node
+from launch_ros.actions import ComposableNodeContainer, Node, LoadComposableNodes
 from launch_ros.descriptions import ComposableNode
 
 
@@ -70,14 +70,25 @@ def launch_setup(context, *args, **kwargs):
     if (use_perf.perform(context) == 'true'):
         launch_prefix += "perf record -g --call-graph dwarf --output=perf.out.node_name.data --"
     return [
-            Node(
-                condition=IfCondition(LaunchConfiguration("use_rviz").perform(context)),
-                package="rviz2",
-                executable="rviz2",
-                name="rviz2",
-                output="log",
-                arguments=["-d", LaunchConfiguration("rviz_config")],
-            ),
+
+        Node(
+            condition=IfCondition(LaunchConfiguration("use_rviz").perform(context)),
+            package="rviz2",
+            executable="rviz2",
+            name="rviz2",
+            output="log",
+            arguments=["-d", LaunchConfiguration("rviz_config")],
+        ),
+
+        Node(
+            package='rtabmap_sync', 
+            executable='rgbd_sync', 
+            # output='screen',
+            parameters=[{'approx_sync':True, 'approx_sync_max_interval':0.01, 'use_sim_time':False}],
+            remappings= [('rgb/image', '/oak/rgb/image_rect'),
+                        ('rgb/camera_info', '/oak/rgb/camera_info'),
+                        ('depth/image', '/oak/stereo/image_raw')]),
+
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(urdf_launch_dir, 'urdf_launch.py')),
@@ -112,6 +123,22 @@ def launch_setup(context, *args, **kwargs):
             output="both",
         ),
 
+        LoadComposableNodes(
+            target_container=name+"_container",
+            composable_node_descriptions=[
+                ComposableNode(
+                    package="image_proc",
+                    plugin="image_proc::RectifyNode",
+                    name="rectify_color_node",
+                    remappings=[('image', name+'/rgb/image_raw'),
+                                ('camera_info', name+'/rgb/camera_info'),
+                                ('image_rect', name+'/rgb/image_rect'),
+                                ('image_rect/compressed', name+'/rgb/image_rect/compressed'),
+                                ('image_rect/compressedDepth', name+'/rgb/image_rect/compressedDepth'),
+                                ('image_rect/theora', name+'/rgb/image_rect/theora')]
+                )
+            ]),
+
     ]
 
 
@@ -128,7 +155,7 @@ def generate_launch_description():
         DeclareLaunchArgument("cam_roll", default_value="0.0"),
         DeclareLaunchArgument("cam_pitch", default_value="0.0"),
         DeclareLaunchArgument("cam_yaw", default_value="0.0"),
-        DeclareLaunchArgument("params_file", default_value=os.path.join(depthai_prefix, 'config', 'camera.yaml')),
+        DeclareLaunchArgument("params_file", default_value=os.path.join(get_package_share_directory("main_pkg"), 'launch', 'rgbd.yaml')),
         DeclareLaunchArgument("use_rviz", default_value='false'),
         DeclareLaunchArgument("rviz_config", default_value=os.path.join(depthai_prefix, "config", "rviz", "rgbd.rviz")),
         DeclareLaunchArgument("rsp_use_composition", default_value='true'),
@@ -140,13 +167,14 @@ def generate_launch_description():
         DeclareLaunchArgument("use_perf", default_value='false')
     ]
 
-    web_video_server_node = Node(
-            package='web_video_server',
-            executable='web_video_server',
-            name='web_video_server',
-            output='screen',
-        )
+    # web_video_server_node = Node(
+    #         package='web_video_server',
+    #         executable='web_video_server',
+    #         name='web_video_server',
+    #         output='screen',
+    #     )
     
     return LaunchDescription(
-        declared_arguments + [OpaqueFunction(function=launch_setup), web_video_server_node]
+        # declared_arguments + [OpaqueFunction(function=launch_setup), web_video_server_node]
+        declared_arguments + [OpaqueFunction(function=launch_setup)]
     )

@@ -61,6 +61,6 @@ def generate_launch_description():
 
     # viz launch
     ld.add_action(declare_use_rviz_cmd)
-    ld.add_action(rviz_cmd)
+    ld.add_action(TimerAction(period=25.0, actions=[rviz_cmd]))
 
     return ld

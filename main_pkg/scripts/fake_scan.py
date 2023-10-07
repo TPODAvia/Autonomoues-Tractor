@@ -22,7 +22,8 @@ class FakeScanNode(Node):
         scan.range_min = 0.0
         scan.range_max = 10.0
         scan.ranges = [9.0] * int((scan.angle_max - scan.angle_min) / scan.angle_increment)
-        self.scan_publisher.publish(scan)
+        while True:
+            self.scan_publisher.publish(scan)
 
 
 def main(args=None):

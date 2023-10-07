@@ -8,6 +8,7 @@ from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition
 from nav2_common.launch import RewrittenYaml
+from launch.actions import TimerAction
 
 
 def generate_launch_description():
@@ -48,14 +49,15 @@ def generate_launch_description():
             os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
         condition=IfCondition(use_rviz)
     )
+
     # Create the launch description and populate
     ld = LaunchDescription()
 
-    # kalman launch
+    # robot localization launch
     ld.add_action(kalman_cmd)
 
     # navigation2 launch
-    ld.add_action(navigation2_cmd)
+    ld.add_action(TimerAction(period=22.0, actions=[navigation2_cmd]))
 
     # viz launch
     ld.add_action(declare_use_rviz_cmd)

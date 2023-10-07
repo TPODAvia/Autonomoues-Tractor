@@ -15,7 +15,7 @@ def generate_launch_description():
 
     declare_use_rviz_cmd = DeclareLaunchArgument(
         'use_real_gps',
-        default_value='True',
+        default_value='False',
         description='To run real gps hardware turn this to true')
     
     return LaunchDescription([
@@ -44,12 +44,12 @@ def generate_launch_description():
             output='screen',
         ),
 
-        Node(
-            package='main_pkg',
-            executable='web.py',
-            name='web_node',
-            output='screen',
-        ),
+        # Node(
+        #     package='main_pkg',
+        #     executable='web.py',
+        #     name='web_node',
+        #     output='screen',
+        # ),
 
         TimerAction(period=24.0, actions=[
             Node(
@@ -85,20 +85,15 @@ def generate_launch_description():
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            arguments=['0.5', '0.5', '0', '0', '0', '0', 'map', 'odom']
+            arguments=['0.5', '0.5', '0', '0', '0', '0', 'map', 'odom'],
+            parameters=[{'use_sim_time': True}]
         ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            arguments=['0', '0', '0', '0', '0', '0', 'base_footprint', 'base_link']
-        ),
-
-        Node(
-            package='main_pkg',
-            executable='fake_scan.py',
-            name='fake_scan',
-            output='screen',
+            arguments=['0', '0', '0', '0', '0', '0', 'base_footprint', 'base_link'],
+            parameters=[{'use_sim_time': True}]
         ),
 
     ])

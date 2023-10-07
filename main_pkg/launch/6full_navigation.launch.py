@@ -12,7 +12,7 @@ from launch_ros.actions import Node
 from launch_ros.actions import PushRosNamespace
 from launch_ros.descriptions import ParameterFile
 from nav2_common.launch import RewrittenYaml
-
+from launch.actions import TimerAction
 
 def generate_launch_description():
     # Get the launch directory
@@ -46,13 +46,19 @@ def generate_launch_description():
         'use_sim_time': use_sim_time,
         'yaml_filename': map_yaml_file}
 
-    configured_params = ParameterFile(
-        RewrittenYaml(
-            source_file=params_file,
-            root_key=namespace,
-            param_rewrites=param_substitutions,
-            convert_types=True),
-        allow_substs=True)
+    # configured_params = ParameterFile(
+    #     RewrittenYaml(
+    #         source_file=params_file,
+    #         root_key=namespace,
+    #         param_rewrites=param_substitutions,
+    #         convert_types=True),
+    #     allow_substs=True)
+    gps_wpf_dir = get_package_share_directory("main_pkg")
+    params_dir = os.path.join(gps_wpf_dir, "launch")
+    nav2_params = os.path.join(params_dir, "nav2_gps.yaml")
+    configured_params = RewrittenYaml(
+        source_file=nav2_params, root_key="", param_rewrites="", convert_types=True
+    )
 
     stdout_linebuf_envvar = SetEnvironmentVariable(
         'RCUTILS_LOGGING_BUFFERED_STREAM', '1')
@@ -109,17 +115,29 @@ def generate_launch_description():
         'log_level', default_value='info',
         description='log level')
 
+    kalman_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(gps_wpf_dir, "launch", '1kalman.launch.py')),
+    )
+
+    rviz_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
+        condition=IfCondition(use_rviz)
+    )
+
+    control_node = Node(
+        package='main_pkg',
+        executable='control_node.py',
+        name='control_node'
+    )
+
     # Specify the actions
     bringup_cmd_group = GroupAction([
         PushRosNamespace(
             condition=IfCondition(use_namespace),
             namespace=namespace),
 
-        Node(
-            package='main_pkg',
-            executable='control_node.py',
-            name='control_node'
-        ),
         
         Node(
             condition=IfCondition(use_composition),
@@ -131,44 +149,34 @@ def generate_launch_description():
             remappings=remappings,
             output='screen'),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(
-                                            os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
-                                            ),
-            condition=IfCondition(slam),),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(os.path.join(
+        #                                     os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
+        #                                     ),
+        #     condition=IfCondition(slam),),
+
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(os.path.join(launch_dir, 'localization_launch.py')),
+        #     condition=IfCondition(PythonExpression(['not ', slam])),
+        #     launch_arguments={'namespace': namespace,
+        #                       'map': map_yaml_file,
+        #                       'use_sim_time': use_sim_time,
+        #                       'autostart': autostart,
+        #                       'params_file': params_file,
+        #                       'use_composition': use_composition,
+        #                       'use_respawn': use_respawn,
+        #                       'container_name': 'nav2_container'}.items()),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('main_pkg'), "launch", '1kalman.launch.py')),
+                os.path.join(bringup_dir, "launch", "navigation_launch.py")
+            ),
+            launch_arguments={
+                "use_sim_time": "False",
+                "params_file": configured_params,
+                "autostart": "True",
+            }.items(),
         ),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'localization_launch.py')),
-            condition=IfCondition(PythonExpression(['not ', slam])),
-            launch_arguments={'namespace': namespace,
-                              'map': map_yaml_file,
-                              'use_sim_time': use_sim_time,
-                              'autostart': autostart,
-                              'params_file': params_file,
-                              'use_composition': use_composition,
-                              'use_respawn': use_respawn,
-                              'container_name': 'nav2_container'}.items()),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'navigation_launch.py')),
-            launch_arguments={'namespace': namespace,
-                              'use_sim_time': use_sim_time,
-                              'autostart': autostart,
-                              'params_file': params_file,
-                              'use_composition': use_composition,
-                              'use_respawn': use_respawn,
-                              'container_name': 'nav2_container'}.items()),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
-            condition=IfCondition(PythonExpression([use_rviz]))
-        )
     ])
 
     # Create the launch description and populate
@@ -190,9 +198,12 @@ def generate_launch_description():
     ld.add_action(declare_log_level_cmd)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(bringup_cmd_group)
+    ld.add_action(TimerAction(period=22.0, actions=[bringup_cmd_group]))
+    # robot localization launch
+    ld.add_action(kalman_cmd)
 
+    ld.add_action(control_node)
     # Visualization
-
+    ld.add_action(rviz_cmd)
 
     return ld

@@ -14,19 +14,70 @@ cors = CORS(app)
 latest_gps_data = None 
 latest_gps_vel_data = None 
 latest_imu_data = None 
+
+class StreamingMovingAverage:
+    def __init__(self, window_size):
+        self.window_size = window_size
+        self.values = []
+        self.sum = 0
+
+    def process(self, value):
+        self.values.append(value)
+        self.sum += value
+        if len(self.values) > self.window_size:
+            self.sum -= self.values.pop(0)
+        return float(self.sum) / len(self.values)
+
+
+average_lat = StreamingMovingAverage(25)
+average_lon = StreamingMovingAverage(25)
   
 class WebPublisherNode(Node):  
  
     def __init__(self):  
         super().__init__('web_publisher')  
-        self.subscription_gps = self.create_subscription(NavSatFix, 'gps/filtered', self.gps_callback, 10)  
+        self.subscription_gps = self.create_subscription(NavSatFix, 'gps/filtered', self.gps_callback, 10)
+        self.subscription_gps = self.create_subscription(NavSatFix, 'gps/fix', self.gps_fix_callback, 10)
         self.subscription_gps_vel = self.create_subscription(String, 'gps/velocity', self.gps_vel_callback, 10) 
         self.subscription_imu = self.create_subscription(Imu, 'imu', self.imu_callback, 10)  
+
+    def gps_fix_callback(self, msg): # check gps data before Kalman filter
+        pos_cov = [float(i) for i in msg.position_covariance]  
+        
+        global average_lat
+        global average_lon
+
+        global_data = {  
+            'data_GPS': {  
+                'latitude': msg.latitude,  
+                'longitude': msg.longitude,  
+                'altitude': msg.altitude,  
+                'position_covariance': pos_cov  
+            }  
+        }  
+
+        avg_lat = average_lat.process(msg.latitude)
+        avg_lon = average_lon.process(msg.longitude)
+        
+        if(msg.latitude- avg_lat>0.0001 or
+            msg.longitude- avg_lon>0.0001):
+            global_data = {  
+            'data_GPS': {  
+                'latitude': msg.latitude,  
+                'longitude': msg.longitude,  
+                'altitude': msg.altitude,  
+                'position_covariance': pos_cov  
+            }  
+        }  
+
+
+        global latest_gps_fix_data
+        latest_gps_fix_data = global_data
 
     def gps_vel_callback(self,msg):
         global_data = {'data_GPS_velocity':  msg.data}
         global latest_gps_vel_data 
-        latest_gps_vel_data = float(global_data) 
+        latest_gps_vel_data = global_data 
 
     def gps_callback(self, msg):  
         pos_cov = [float(i) for i in msg.position_covariance]  
@@ -99,7 +150,7 @@ def get_latest_data():
            }}
     if latest_gps_vel_data is None:
         latest_gps_vel_data ={'data_GPS_velocity': 0.0 }
-    return jsonify({**latest_gps_data, **latest_gps_vel_data, **latest_imu_data})
+    return jsonify({**latest_gps_fix_data, **latest_gps_vel_data, **latest_imu_data})
 
 
 def start_flask_server():  

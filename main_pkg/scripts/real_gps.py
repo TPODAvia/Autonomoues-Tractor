@@ -9,6 +9,7 @@ from sensor_msgs.msg import NavSatStatus
 from std_msgs.msg import Header
 import serial
 import time
+import traceback
 
 class GpsNode(Node):
 
@@ -23,30 +24,39 @@ class GpsNode(Node):
         self.serial_port = self.get_parameter('serial_port').get_parameter_value().string_value
 
         self.ser = serial.Serial(self.serial_port)
-        timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.gps_callback)
+        self.ser.baudrate = 115200 # 115200 # 19200
+        self.gps_callback()
 
     def gps_callback(self):
+        non_decimal = re.compile(r'[^\d.]+')
+        time.sleep(10) # Init time all sensors
         while True:
-            #time.sleep() 
-            non_decimal = re.compile(r'[^\d.]+')
-            ser_bytes = self.ser.readline()
-            if not ser_bytes:
-                return
-            decoded_bytes = ser_bytes.decode('utf-8')
-            # print(decoded_bytes)
+            time.sleep(0.001)
+            try:
+                ser_bytes = self.ser.readline()
+            except:
+                self.get_logger().info('No serial data')
+                continue
+            #time.sleep(0.01)
 
-            if "GPGGA" in decoded_bytes:
-                # print("decoded_bytes: ")
-                # print(decoded_bytes)
+            if not ser_bytes:
+                continue
+            
+            try:
+                decoded_bytes = ser_bytes.decode('utf-8')
+            except:
+                # self.get_logger().error(traceback.format_exc())
+                continue
+
+            if "GNGGA" in decoded_bytes:
                 try:
                     # print(int(decoded_bytes.split(",")[7]))
-                    if int(decoded_bytes.split(",")[7]) < 3:
+                    if int(decoded_bytes.split(",")[7]) < 4:
                         self.get_logger().info('Not enought sattelite: %s' % decoded_bytes.split(",")[7])
-                        return
+                        continue
                 except: 
                     self.get_logger().info('Bad connection')
-                    return
+                    continue
 
                 msg = NavSatFix()
                 msg.header = Header()
@@ -60,11 +70,8 @@ class GpsNode(Node):
                 if decoded_bytes.split(",")[2] == '':
 
                     print("no gps data")
-                    time.sleep(1)
-                    return
-                    # msg.latitude = -1.0
-                    # msg.longitude = -1.0
-                    # msg.altitude = -1.0
+
+                    continue
                 
                 else:
                     latitude_degrees = float(non_decimal.sub('',decoded_bytes.split(",")[2]))*0.01
@@ -79,8 +86,6 @@ class GpsNode(Node):
 
                     msg.altitude = float(non_decimal.sub('',decoded_bytes.split(",")[9]))
 
-
-
                 msg.position_covariance[0] = 0
                 msg.position_covariance[4] = 0
                 msg.position_covariance[8] = 0
@@ -88,7 +93,7 @@ class GpsNode(Node):
 
                 self.publisher_.publish(msg)
                 self.best_pos_a = None
-                break
+                continue
 
             if "GNRMC" in decoded_bytes:
                 # print(decoded_bytes)
@@ -101,7 +106,7 @@ class GpsNode(Node):
                     gps_vel.data = decoded_bytes.split(",")[7]
                     # print(decoded_bytes.split(",")[7])
                 self.string_publisher.publish(gps_vel)
-                break
+                continue
 
 
 def main(args=None):

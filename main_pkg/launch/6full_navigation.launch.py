@@ -66,7 +66,7 @@ def generate_launch_description():
 
     declare_use_rviz_cmd = DeclareLaunchArgument(
         'use_rviz',
-        default_value='True',
+        default_value='False',
         description='Whether to start RVIZ')
     
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -76,12 +76,12 @@ def generate_launch_description():
 
     declare_use_namespace_cmd = DeclareLaunchArgument(
         'use_namespace',
-        default_value='false',
+        default_value='False',
         description='Whether to apply a namespace to the navigation stack')
 
     declare_slam_cmd = DeclareLaunchArgument(
         'slam',
-        default_value='False',
+        default_value='True',
         description='Whether run a SLAM')
 
     declare_map_yaml_cmd = DeclareLaunchArgument(
@@ -101,7 +101,7 @@ def generate_launch_description():
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     declare_autostart_cmd = DeclareLaunchArgument(
-        'autostart', default_value='true',
+        'autostart', default_value='True',
         description='Automatically startup the nav2 stack')
 
     declare_use_composition_cmd = DeclareLaunchArgument(
@@ -121,6 +121,12 @@ def generate_launch_description():
             os.path.join(gps_wpf_dir, "launch", '1kalman.launch.py')),
     )
 
+    slam_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+                                        os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
+                                        ),
+        condition=IfCondition(slam),)
+    
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
@@ -138,7 +144,6 @@ def generate_launch_description():
         PushRosNamespace(
             condition=IfCondition(use_namespace),
             namespace=namespace),
-
         
         Node(
             condition=IfCondition(use_composition),
@@ -149,12 +154,6 @@ def generate_launch_description():
             arguments=['--ros-args', '--log-level', log_level],
             remappings=remappings,
             output='screen'),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(
-                                            os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
-                                            ),
-            condition=IfCondition(slam),),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(launch_dir, 'localization_launch.py')),
@@ -202,6 +201,8 @@ def generate_launch_description():
     ld.add_action(TimerAction(period=22.0, actions=[bringup_cmd_group]))
     # robot localization launch
     ld.add_action(kalman_cmd)
+
+    ld.add_action(TimerAction(period=30.0, actions=[slam_cmd]))
 
     ld.add_action(control_node)
     # Visualization

@@ -82,28 +82,16 @@ def generate_launch_description():
         DeclareLaunchArgument("name", default_value="oak"),
         DeclareLaunchArgument("params_file", default_value=os.path.join(depthai_prefix, 'config', 'rgbd.yaml')),
         DeclareLaunchArgument("rectify_rgb", default_value="True"),
+        DeclareLaunchArgument("rviz", default_value="False"),
     ]
 
-    # imu_node = Node(
-    #         package='main_pkg',
-    #         executable='mpu9250_node.py',
-    #         name='mpu9250', 
-    #     )
-
-    # madwick_node = TimerAction(period=22.0, actions=[
-    #     Node(
-    #         package='imu_filter_madgwick',
-    #         executable='imu_filter_madgwick_node',
-    #         name='imu_filter',
-    #         output='screen',
-    #         parameters=[os.path.join(config_dir, 'imu_filter.yaml')],
-    #         remappings=[('imu/data', 'imu')] 
-    #     ),
-    
-    # ])
-    
+    use_rviz = LaunchConfiguration('rviz')
+    bringup_dir = get_package_share_directory('nav2_bringup')
+    rviz_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(bringup_dir, "launch", 'rviz_launch.py')),
+        condition=IfCondition(use_rviz)
+    )
 
     return LaunchDescription(
-        # declared_arguments + [OpaqueFunction(function=launch_setup), imu_node, madwick_node, static_tf_node]
-        declared_arguments + [OpaqueFunction(function=launch_setup)]
+        declared_arguments + [OpaqueFunction(function=launch_setup), TimerAction(period=22.0, actions=[rviz_cmd])]
     )

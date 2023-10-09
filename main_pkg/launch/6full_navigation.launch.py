@@ -22,7 +22,7 @@ def generate_launch_description():
     # Create the launch configuration variables
     namespace = LaunchConfiguration('namespace')
     use_namespace = LaunchConfiguration('use_namespace')
-    slam = LaunchConfiguration('slam')
+    use_slam = LaunchConfiguration('slam')
     map_yaml_file = LaunchConfiguration('map')
     use_sim_time = LaunchConfiguration('use_sim_time')
     params_file = LaunchConfiguration('params_file')
@@ -30,7 +30,9 @@ def generate_launch_description():
     use_composition = LaunchConfiguration('use_composition')
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
-    use_rviz = LaunchConfiguration('use_rviz')
+    use_rviz = LaunchConfiguration('rviz')
+    use_driver = LaunchConfiguration('control_driver')
+    use_kalman = LaunchConfiguration('kalman_filter')
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -57,75 +59,35 @@ def generate_launch_description():
     gps_wpf_dir = get_package_share_directory("main_pkg")
     params_dir = os.path.join(gps_wpf_dir, "launch")
     nav2_params = os.path.join(params_dir, "nav2_params.yaml")
-    configured_params = RewrittenYaml(
-        source_file=nav2_params, root_key="", param_rewrites="", convert_types=True
-    )
+    configured_params = RewrittenYaml(source_file=nav2_params, root_key="", param_rewrites="", convert_types=True )
+    stdout_linebuf_envvar = SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
-    stdout_linebuf_envvar = SetEnvironmentVariable(
-        'RCUTILS_LOGGING_BUFFERED_STREAM', '1')
-
-    declare_use_rviz_cmd = DeclareLaunchArgument(
-        'use_rviz',
-        default_value='False',
-        description='Whether to start RVIZ')
-    
-    declare_namespace_cmd = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Top-level namespace')
-
-    declare_use_namespace_cmd = DeclareLaunchArgument(
-        'use_namespace',
-        default_value='False',
-        description='Whether to apply a namespace to the navigation stack')
-
-    declare_slam_cmd = DeclareLaunchArgument(
-        'slam',
-        default_value='True',
-        description='Whether run a SLAM')
-
-    declare_map_yaml_cmd = DeclareLaunchArgument(
-        'map',
-        default_value=os.path.join(
-            bringup_dir, 'maps', 'turtlebot3_world.yaml'),
-        description='Full path to map file to load')
-
-    declare_use_sim_time_cmd = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='false',
-        description='Use simulation (Gazebo) clock if true')
-
-    declare_params_file_cmd = DeclareLaunchArgument(
-        'params_file',
-        default_value=os.path.join(get_package_share_directory('main_pkg'), 'launch', 'nav2_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
-
-    declare_autostart_cmd = DeclareLaunchArgument(
-        'autostart', default_value='True',
-        description='Automatically startup the nav2 stack')
-
-    declare_use_composition_cmd = DeclareLaunchArgument(
-        'use_composition', default_value='True',
-        description='Whether to use composed bringup')
-
-    declare_use_respawn_cmd = DeclareLaunchArgument(
-        'use_respawn', default_value='False',
-        description='Whether to respawn if a node crashes. Applied when composition is disabled.')
-
-    declare_log_level_cmd = DeclareLaunchArgument(
-        'log_level', default_value='info',
-        description='log level')
+    declare_use_rviz_cmd =          DeclareLaunchArgument('rviz',           default_value='False',  description='Whether to start RVIZ')
+    declare_namespace_cmd =         DeclareLaunchArgument('namespace',      default_value='',       description='Top-level namespace')
+    declare_use_namespace_cmd =     DeclareLaunchArgument('use_namespace',  default_value='False',  description='Whether to apply a namespace to the navigation stack')
+    declare_slam_cmd =              DeclareLaunchArgument('slam',           default_value='False',  description='Whether run a SLAM')
+    declare_map_yaml_cmd =          DeclareLaunchArgument('map',            default_value=os.path.join(bringup_dir, 'maps', 'turtlebot3_world.yaml'), description='Full path to map file to load')
+    declare_use_sim_time_cmd =      DeclareLaunchArgument('use_sim_time',   default_value='False',  description='Use simulation (Gazebo) clock if true')
+    declare_params_file_cmd =       DeclareLaunchArgument('params_file',    default_value=os.path.join(get_package_share_directory('main_pkg'), 'launch', 'nav2_params.yaml'), description='Full path to the ROS2 parameters file to use for all launched nodes')
+    declare_autostart_cmd =         DeclareLaunchArgument('autostart',      default_value='True',   description='Automatically startup the nav2 stack')
+    declare_use_composition_cmd =   DeclareLaunchArgument('use_composition', default_value='True',  description='Whether to use composed bringup')
+    declare_use_respawn_cmd =       DeclareLaunchArgument('use_respawn',    default_value='False',  description='Whether to respawn if a node crashes. Applied when composition is disabled.')
+    declare_log_level_cmd =         DeclareLaunchArgument('log_level',      default_value='info',   description='log level')
+    declare_use_control_cmd =       DeclareLaunchArgument('control_driver', default_value='False',   description='Control node for the robot')
+    declare_use_kalman_cmd =        DeclareLaunchArgument('kalman_filter',  default_value='False',   description='Trigger the EKF node')
 
     kalman_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(gps_wpf_dir, "launch", '1kalman.launch.py')),
+        condition=IfCondition(use_kalman)
     )
 
     slam_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(
-                                        os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
-                                        ),
-        condition=IfCondition(slam),)
+        PythonLaunchDescriptionSource(
+        os.path.join(os.path.join(get_package_share_directory('main_pkg'), 'launch'), '5oak_slam.launch.py')
+        ),
+        condition=IfCondition(use_slam)
+    )
     
     rviz_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -136,7 +98,8 @@ def generate_launch_description():
     control_node = Node(
         package='main_pkg',
         executable='control_node.py',
-        name='control_node'
+        name='control_node',
+        condition=IfCondition(use_driver)
     )
 
     # Specify the actions
@@ -157,7 +120,7 @@ def generate_launch_description():
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(os.path.join(launch_dir, 'localization_launch.py')),
-            condition=IfCondition(PythonExpression(['not ', slam])),
+            condition=IfCondition(PythonExpression(['not ', use_slam])),
             launch_arguments={'namespace': namespace,
                               'map': map_yaml_file,
                               'use_sim_time': use_sim_time,
@@ -196,16 +159,22 @@ def generate_launch_description():
     ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
+    ld.add_action(declare_use_control_cmd)
+    ld.add_action(declare_use_kalman_cmd)
 
     # Add the actions to launch all of the navigation nodes
-    ld.add_action(TimerAction(period=22.0, actions=[bringup_cmd_group]))
-    # robot localization launch
+    # ld.add_action(TimerAction(period=22.0, actions=[bringup_cmd_group]))
+
+    # Robot localization launch
     ld.add_action(kalman_cmd)
 
-    ld.add_action(TimerAction(period=30.0, actions=[slam_cmd]))
+    # Use SLAM
+    ld.add_action(TimerAction(period=25.0, actions=[slam_cmd]))
 
+    # Use control driver
     ld.add_action(control_node)
+
     # Visualization
-    ld.add_action(TimerAction(period=25.0, actions=[rviz_cmd]))
+    ld.add_action(TimerAction(period=30.0, actions=[rviz_cmd]))
 
     return ld

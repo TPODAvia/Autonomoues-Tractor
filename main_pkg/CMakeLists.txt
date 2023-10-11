@@ -14,6 +14,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
 # Include Cpp "include" directory
 include_directories(include)
 # Create Cpp executable
@@ -21,11 +22,12 @@ add_executable(cpp_executable src/cpp_node.cpp)
 ament_target_dependencies(cpp_executable rclcpp geometry_msgs)
 
 add_executable(save_filter_gps src/save_filter_gps.cpp)
-ament_target_dependencies(save_filter_gps rclcpp sensor_msgs)
+ament_target_dependencies(save_filter_gps rclcpp sensor_msgs cv_bridge)
 
 # Install Cpp executables
 install(TARGETS
   cpp_executable
+  save_filter_gps
   DESTINATION lib/${PROJECT_NAME}
 )
 # Install Python modules

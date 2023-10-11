@@ -15,7 +15,8 @@ def launch_setup(context, *args, **kwargs):
     if(context.environment.get('DEPTHAI_DEBUG')=='1'):
         log_level='debug'
 
-    
+    param_config = os.path.join(
+        get_package_share_directory('main_pkg'), 'launch', 'laser.yaml')
 
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
     
@@ -71,6 +72,28 @@ def launch_setup(context, *args, **kwargs):
         launch_prefix += "perf record -g --call-graph dwarf --output=perf.out.node_name.data --"
     return [
 
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     arguments=['0', '0', '0', '0', '0', '0', 'map', 'camera_depth_frame'],
+        #     parameters=[{'use_sim_time': True}]
+        # ),
+
+        # Node(
+        #     package='depthimage_to_laserscan',
+        #     executable='depthimage_to_laserscan_node',
+        #     name='depthimage_to_laserscan',
+        #     remappings=[('depth', '/oak/stereo/image_raw'),
+        #                 ('depth_camera_info', '/oak/rgb/camera_info')],
+        #     parameters=[param_config]),
+
+        # Node(
+        #     package='main_pkg',
+        #     executable='save_filter_gps',
+        #     name='save_filter_gps',
+        #     output='screen',
+        # ),
+        
         Node(
             condition=IfCondition(LaunchConfiguration("use_rviz").perform(context)),
             package="rviz2",
@@ -85,7 +108,7 @@ def launch_setup(context, *args, **kwargs):
             executable='rgbd_sync', 
             # output='screen',
             parameters=[{'approx_sync':True, 'approx_sync_max_interval':0.01, 'use_sim_time':False}],
-            remappings= [('rgb/image', '/oak/rgb/image_rect'),
+            remappings= [('rgb/image', '/oak/rgb/image_raw'),
                         ('rgb/camera_info', '/oak/rgb/camera_info'),
                         ('depth/image', '/oak/stereo/image_raw')]),
 
@@ -123,21 +146,21 @@ def launch_setup(context, *args, **kwargs):
             output="both",
         ),
 
-        LoadComposableNodes(
-            target_container=name+"_container",
-            composable_node_descriptions=[
-                ComposableNode(
-                    package="image_proc",
-                    plugin="image_proc::RectifyNode",
-                    name="rectify_color_node",
-                    remappings=[('image', name+'/rgb/image_raw'),
-                                ('camera_info', name+'/rgb/camera_info'),
-                                ('image_rect', name+'/rgb/image_rect'),
-                                ('image_rect/compressed', name+'/rgb/image_rect/compressed'),
-                                ('image_rect/compressedDepth', name+'/rgb/image_rect/compressedDepth'),
-                                ('image_rect/theora', name+'/rgb/image_rect/theora')]
-                )
-            ]),
+        # LoadComposableNodes(
+        #     target_container=name+"_container",
+        #     composable_node_descriptions=[
+        #         ComposableNode(
+        #             package="image_proc",
+        #             plugin="image_proc::RectifyNode",
+        #             name="rectify_color_node",
+        #             remappings=[('image', name+'/rgb/image_raw'),
+        #                         ('camera_info', name+'/rgb/camera_info'),
+        #                         ('image_rect', name+'/rgb/image_rect'),
+        #                         ('image_rect/compressed', name+'/rgb/image_rect/compressed'),
+        #                         ('image_rect/compressedDepth', name+'/rgb/image_rect/compressedDepth'),
+        #                         ('image_rect/theora', name+'/rgb/image_rect/theora')]
+        #         )
+        #     ]),
 
     ]
 

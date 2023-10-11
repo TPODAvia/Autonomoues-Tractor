@@ -12,7 +12,7 @@ from launch.actions import TimerAction
 def launch_setup(context, *args, **kwargs):
     name = LaunchConfiguration('name').perform(context)
     depthai_prefix = get_package_share_directory("depthai_ros_driver")
-
+    
     params_file= LaunchConfiguration("params_file")
     parameters = [
         {
@@ -65,13 +65,13 @@ def launch_setup(context, *args, **kwargs):
             ],
         ),
 
-        # Node(
-        #     package="rtabmap_viz",
-        #     executable="rtabmap_viz",
-        #     output="screen",
-        #     parameters=parameters,
-        #     remappings=remappings,
-        # ),
+        Node(
+            package="rtabmap_viz",
+            executable="rtabmap_viz",
+            output="screen",
+            parameters=parameters,
+            remappings=remappings,
+        ),
     ]
 
 
@@ -93,5 +93,5 @@ def generate_launch_description():
     )
 
     return LaunchDescription(
-        declared_arguments + [OpaqueFunction(function=launch_setup), TimerAction(period=22.0, actions=[rviz_cmd])]
+        declared_arguments + [OpaqueFunction(function=launch_setup), TimerAction(period=15.0, actions=[rviz_cmd])]
     )

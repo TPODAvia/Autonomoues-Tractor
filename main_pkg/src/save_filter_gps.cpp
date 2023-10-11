@@ -1,67 +1,85 @@
-#include <iostream>
-#include <fstream>
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/nav_sat_fix.hpp"
-#include "sensor_msgs/msg/imu.hpp"
+#include "sensor_msgs/msg/image.hpp"
+#include "cv_bridge/cv_bridge.h"
+#include "opencv2/opencv.hpp"
+#include "sensor_msgs/msg/camera_info.hpp"
 
-class GPSSubscriber : public rclcpp::Node
+//sudo apt-get install ros-humble-cv-bridge
+class ImageFilterNode : public rclcpp::Node
 {
-float Velocity_x_ = 0;
-float old_timestamp_ = 0;
-
 public:
-  GPSSubscriber() : Node("gps_subscriber")
+  ImageFilterNode()
+  : Node("image_filter_node")
   {
-    // Create the subscriber
-    subscription_ = create_subscription<sensor_msgs::msg::NavSatFix>(
-      "/gps/filtered", 10, std::bind(&GPSSubscriber::gpsCallback, this, std::placeholders::_1));
-    
-    // Create a subscriber for the Imu messages
-    imu_subscriber_ = this->create_subscription<sensor_msgs::msg::Imu>(
-        "imu_topic", 10, std::bind(&GPSSubscriber::imuCallback, this, std::placeholders::_1));
+    auto qos = rclcpp::QoS(rclcpp::KeepLast(10));
+    publisher1_ = this->create_publisher<sensor_msgs::msg::Image>("oak/rgb/image_sync", 10);
+    publisher2_ = this->create_publisher<sensor_msgs::msg::CameraInfo>("oak/rgb/info_sync", 10);
+    publisher3_ = this->create_publisher<sensor_msgs::msg::Image>("oak/stereo/image_blur", 10);
+
+    subscription1_ = this->create_subscription<sensor_msgs::msg::Image>(
+        "oak/rgb/image_raw", 10, std::bind(&ImageFilterNode::image_callback1, this, std::placeholders::_1));
+        
+    subscription2_ = this->create_subscription<sensor_msgs::msg::CameraInfo>(
+        "oak/rgb/camera_info", 10, std::bind(&ImageFilterNode::camera_info_callback, this, std::placeholders::_1));
+
+    subscription3_ = this->create_subscription<sensor_msgs::msg::Image>(
+        "oak/stereo/image_raw", 10, std::bind(&ImageFilterNode::image_callback2, this, std::placeholders::_1));
   }
 
 private:
-  void gpsCallback(const sensor_msgs::msg::NavSatFix::SharedPtr msg)
+  sensor_msgs::msg::Image image_msg; // Declare image_msg as a member variable
+  sensor_msgs::msg::CameraInfo image_info; // Declare image_info as a member variable
+  
+
+  void image_callback1(const sensor_msgs::msg::Image::SharedPtr msg)
   {
-    std::cout<< "Hello" << std::endl;
-    // Save the data to a file
-    // std::ofstream file("/home/ubuntu/file.txt", std::ios::app);
-    // if (file.is_open())
-    // {
-    //   file << "Latitude: " << msg->latitude << std::endl;
-    //   file << "Longitude: " << msg->longitude << std::endl;
-    //   file << "Altitude: " << msg->altitude << std::endl;
-    //   file << "Velocity x: " << Velocity_x_ << std::endl;
-    //   // file << "position_covariance: " << msg->position_covariance << std::endl;
-    //   file.close();
-    // }
-    // else
-    // {
-    //   RCLCPP_ERROR(get_logger(), "Failed to open file");
-    // }
-    // NULL;
+    image_msg = *msg;
   }
 
-  void imuCallback(const sensor_msgs::msg::Imu::SharedPtr msg)
+  void camera_info_callback(const sensor_msgs::msg::CameraInfo::SharedPtr msg)
   {
-    // Get the current timestamp
-    auto now = std::chrono::system_clock::now();
-    float new_timestamp = std::chrono::system_clock::to_time_t(now);
+    image_info = *msg;
+  }
 
-    Velocity_x_ = Velocity_x_ + (msg->linear_acceleration.x)*(new_timestamp - old_timestamp_);
+  void image_callback2(const sensor_msgs::msg::Image::SharedPtr msg)
+  {
+    cv_bridge::CvImagePtr cv_ptr;
+    try
+    {
+      cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::TYPE_16UC1);
+    }
+    catch (cv_bridge::Exception& e)
+    {
+      RCLCPP_ERROR(this->get_logger(), "cv_bridge exception: %s", e.what());
+      return;
+    }
+    cv::medianBlur(cv_ptr->image, cv_ptr->image, 5);
+    sensor_msgs::msg::Image::SharedPtr msg_out = cv_bridge::CvImage(std_msgs::msg::Header(), "mono16", cv_ptr->image).toImageMsg();
+
+    auto current_time = this->get_clock()->now();
+    image_msg.header.stamp = current_time;
+    image_info.header.stamp = current_time;
+    msg_out->header.stamp = current_time;
+
+    publisher1_->publish(image_msg);
+    publisher2_->publish(image_info);
+    publisher3_->publish(*msg_out);
 
   }
 
-  rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscriber_;
-  rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr subscription_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription1_;
+  rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr subscription2_;
+  rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subscription3_;
+
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher1_;
+  rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr publisher2_;
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr publisher3_;
 };
 
-int main(int argc, char** argv)
+int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<GPSSubscriber>();
-  rclcpp::spin(node);
+  rclcpp::spin(std::make_shared<ImageFilterNode>());
   rclcpp::shutdown();
   return 0;
 }

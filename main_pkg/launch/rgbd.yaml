@@ -61,7 +61,7 @@
     #   i_low_bandwidth_quality: 50
     #   i_max_q_size: 30
     #   i_publish_topic: false
-      i_resolution: '480'
+      i_resolution: '400'
     #   i_reverse_stereo_socket_order: false
     #   i_sensor_img_orientation: NORMAL
     #   i_set_isp3a_fps: false
@@ -94,7 +94,7 @@
       i_fsync_continuous: false
       i_fsync_trigger: false
       i_get_base_device_timestamp: false
-      i_height: 720
+      i_height: 480
       i_interleaved: false
       i_isp_den: 3
       i_isp_num: 2
@@ -115,7 +115,7 @@
       i_simulate_from_topic: false
       i_simulated_topic_name: ''
       i_update_ros_base_time_on_ros_msg: false
-      i_width: 1280
+      i_width: 640
       r_exposure: 20000
       r_focus: 1
       r_iso: 800
@@ -140,7 +140,7 @@
     #   i_low_bandwidth_quality: 50
     #   i_max_q_size: 30
     #   i_publish_topic: false
-      i_resolution: '480'
+      i_resolution: '400'
     #   i_reverse_stereo_socket_order: false
     #   i_sensor_img_orientation: NORMAL
     #   i_set_isp3a_fps: false
@@ -153,11 +153,11 @@
     #   r_set_man_exposure: false
     stereo:
     #   i_add_exposure_offset: false
-    #   i_align_depth: true
+      i_align_depth: true
     #   i_bilateral_sigma: 0
     #   i_board_socket_id: 0
-    #   i_depth_filter_size: 5
-    #   i_depth_preset: HIGH_ACCURACY
+      i_depth_filter_size: 5
+      i_depth_preset: HIGH_ACCURACY
     #   i_disparity_width: DISPARITY_96
     #   i_enable_alpha_scaling: false
     #   i_enable_brightness_filter: false
@@ -178,12 +178,12 @@
     #   i_left_rect_enable_feature_tracker: false
     #   i_left_rect_exposure_offset: 0
     #   i_left_rect_low_bandwidth: false
-    #   i_left_rect_low_bandwidth_quality: 50
+      i_left_rect_low_bandwidth_quality: 50
     #   i_left_socket_id: 1
     #   i_low_bandwidth: false
-    #   i_low_bandwidth_quality: 50
+      i_low_bandwidth_quality: 50
     #   i_lr_check: true
-    #   i_lrc_threshold: 10
+      i_lrc_threshold: 10
     #   i_max_q_size: 30
     #   i_output_disparity: false
     #   i_publish_left_rect: false
@@ -196,12 +196,12 @@
     #   i_right_rect_enable_feature_tracker: false
     #   i_right_rect_exposure_offset: 0
     #   i_right_rect_low_bandwidth: false
-    #   i_right_rect_low_bandwidth_quality: 50
+      i_right_rect_low_bandwidth_quality: 50
     #   i_right_socket_id: 2
     #   i_set_input_size: false
     #   i_socket_name: rgb
-    #   i_stereo_conf_threshold: 240
-      i_subpixel: true
+      i_stereo_conf_threshold: 240
+      i_subpixel: false
     #   i_update_ros_base_time_on_ros_msg: false
     #   i_width: 1280
     # use_sim_time: false

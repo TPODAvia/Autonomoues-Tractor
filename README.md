@@ -334,3 +334,15 @@ These steps should help you use `ros2bag` in ROS2 Humble. For more details and a
 - [ROS2 Humble Documentation](https://docs.ros.org/en/humble/index.html)
 - [ROS2Bag Documentation](https://docs.ros.org/en/ros2_packages/humble/api/ros2bag/ros2bag.api.html)
 - [ROS2Bag Extensions](https://github.com/tier4/ros2bag_extensions) (Additional features and functionalities for `ros2bag`)
+
+
+To add a permanent static route in Ubuntu 18.04 without the netplan folder, you can use the following method:
+
+Open the terminal and run the command sudo nano /etc/network/interfaces to edit the network interfaces file.
+Add the following lines to the file, replacing 192.168.1.1 with the desired gateway IP and eth0 with the appropriate interface name:
+auto eth0
+iface eth0 inet static
+    address <your_ip_address>
+    netmask <your_netmask>
+    gateway 192.168.1.1
+    up route add default via 192.168.1.1 dev eth0

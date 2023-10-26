@@ -57,6 +57,14 @@ sudo ./ROS2-installation/ROS2_server.sh
 echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 echo "source ~/colcon_ws/install/setup.bash" >> ~/.bashrc
 ```
+
+!!! warning delete the tractor simulation repository when pulling from the git
+
+```bash
+cd ~/colcon_ws/src
+sudo rm -r tractor_simulations
+```
+
 #### Encrease swap file:
 
 See this instructions for the details https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-22-04

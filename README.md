@@ -137,6 +137,13 @@ rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install --packages-select orbslam3
 
 ```
+use `colcon_cd` to find the package
+```bash
+echo "source /usr/share/colcon_cd/function/colcon_cd.sh" >> ~/.bashrc
+echo "export _colcon_cd_root=/opt/ros/humble/" >> ~/.bashrc
+
+colcon_cd my_package
+```
 
 ### Install remote desktop tools for debuging (Optional)
 
@@ -346,3 +353,6 @@ iface eth0 inet static
     netmask <your_netmask>
     gateway 192.168.1.1
     up route add default via 192.168.1.1 dev eth0
+
+
+

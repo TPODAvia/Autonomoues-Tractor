@@ -30,7 +30,7 @@ Once the tool screen is opened, go to Interface Options and then enable "Legacy 
 
 ```bash
 sudo usermod -aG video USER-NAME
-sudo nano boot/firmware/config.txt
+sudo nano /boot/firmware/config.txt
 start_x = 1 # Add this line at the bottom
 
 # From command line, you could use vcgencmd utility as shown below:
@@ -63,7 +63,7 @@ See this instructions for the details https://www.digitalocean.com/community/tut
 
 ### Add watchdog
 
-Activate the hardware watchdog on your Raspberry Pi. With the command `sudo nano /boot/firmvare/config.txt`, add the following line to enable the watchdog:
+Activate the hardware watchdog on your Raspberry Pi. With the command `sudo nano /boot/firmware/config.txt`, add the following line to enable the watchdog:
 
 ```bash
 dtparam=watchdog=on
